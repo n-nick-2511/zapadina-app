@@ -286,6 +286,8 @@ def process_area(bbox):
 
     model = get_model()
 
+    print(paths)
+
     for i, (tile_path, x, y) in enumerate(paths, start=1):
 
 
