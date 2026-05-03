@@ -45,10 +45,10 @@ try:
         time.sleep(1)
 except KeyboardInterrupt:
     print("Закрытие вручную...")
-finally:
-    proc.terminate()
-    try:
-        proc.wait(timeout=3)
-    except:
-        proc.kill()
+# finally:
+#     proc.terminate()
+#     try:
+#         proc.wait(timeout=3)
+#     except:
+        # proc.kill()
 
