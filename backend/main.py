@@ -12,6 +12,9 @@ from fastapi import BackgroundTasks
 from ultralytics import YOLO
 from pathlib import Path
 
+from fastapi.responses import FileResponse
+
+
 
 
 app = FastAPI()
@@ -79,6 +82,9 @@ def get_connection():
     )
 
 
+@app.get("/")
+def index():
+    return FileResponse("frontend/index.html")
 
 @app.get("/api/detections")
 def get_detections():
