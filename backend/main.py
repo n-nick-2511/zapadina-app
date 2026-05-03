@@ -339,6 +339,13 @@ def get_region_detections(region_id: str):
 
     return result
 
+@app.get("/whoami")
+def whoami():
+    return {
+        "file": __file__,
+        "app_id": id(app)
+    }
+
 @app.get("/ping")
 def ping():
     global last_ping
