@@ -21,7 +21,7 @@ print("🔥 THIS FILE IS RUNNING:", __file__)
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI()
-app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
+app.mount("/static", StaticFiles(directory="../frontend"), name="static")
 
 last_ping = time.time()
 
@@ -92,7 +92,7 @@ def ping():
     return {"status": "ok"}
 
 @app.get("/")
-def index():
+def root():
     return FileResponse(os.path.join(BASE_DIR, "../frontend/index.html"))
 
 @app.get("/api/detections")
