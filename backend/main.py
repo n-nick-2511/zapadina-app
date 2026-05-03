@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 
 
 
-
+print("🔥 LOADED MAIN.PY")
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI()
