@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 
 
 
-print("🔥 LOADED MAIN.PY")
+print("🔥 THIS FILE IS RUNNING:", __file__)
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI()
