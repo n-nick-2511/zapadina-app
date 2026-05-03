@@ -147,7 +147,7 @@ def download_tile(x, y, z, save_dir):
     except:
         return None
 
-def get_tiles_in_bbox(bbox, zoom=16):
+def get_tiles_in_bbox(bbox, zoom=15):
     min_lon, min_lat, max_lon, max_lat = bbox
 
     x1, y1 = deg2num(min_lat, min_lon, zoom)
