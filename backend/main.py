@@ -64,7 +64,7 @@ model = None
 def get_model():
     global model
 
-    model_path = BASE_DIR / "best1.pt"
+    model_path = BASE_DIR / "best.pt"
     if model is None:
         model = YOLO(model_path)
     return model
@@ -215,45 +215,23 @@ def save_detection_from_tile(x, y, xyxy, conf, zoom=15):
     conn.commit()
     cur.close()
     conn.close()
-def get_and_download_tiles(bbox, zoom=15):
-    tiles = get_tiles_in_bbox(bbox, zoom)
+# def get_and_download_tiles(bbox, zoom=15):
+#     tiles = get_tiles_in_bbox(bbox, zoom)
+#
+#     if len(tiles) > 1000:
+#         print("Слишком большая область")
+#         return []
+#
+#     paths = []
+#
+#     for x, y in tiles:
+#         path = download_tile(x, y, zoom, "temp_tiles")
+#         if path:
+#             paths.append((path, x, y))
+#
+#     return paths
 
-    if len(tiles) > 1000:
-        print("Слишком большая область")
-        return []
 
-    paths = []
-
-    for x, y in tiles:
-        path = download_tile(x, y, zoom, "temp_tiles")
-        if path:
-            paths.append((path, x, y))
-
-    return paths
-
-# def process_area(bbox):
-#     print("🚀 process_area START", bbox)
-#
-#     tiles = get_and_download_tiles(bbox)
-#     print("tiles:", len(tiles))
-#
-#     model = get_model()
-#
-#     for tile_path, x, y in tiles:
-#
-#         print("processing:", tile_path)
-#
-#         results = model.predict(tile_path, conf=0.2, imgsz=512)
-#
-#         for r in results:
-#             print("boxes:", len(r.boxes))
-#             for box in r.boxes:
-#
-#                 conf = float(box.conf[0])
-#                 xyxy = box.xyxy[0].tolist()
-#
-#                 # 👇 вот тут ключ — перевод в географию
-#                 save_detection_from_tile(x, y, xyxy, conf)
 
 def process_area(bbox):
     global status
