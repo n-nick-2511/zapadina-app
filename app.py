@@ -6,9 +6,6 @@ import sys
 import requests
 
 
-
-
-
 proc = subprocess.Popen(
     [sys.executable, "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
     cwd="backend"

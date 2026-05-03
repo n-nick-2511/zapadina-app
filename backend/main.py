@@ -64,7 +64,7 @@ model = None
 def get_model():
     global model
 
-    model_path = BASE_DIR / "best.pt"
+    model_path = BASE_DIR / "best1.pt"
     if model is None:
         print("Loading model...")
         model = YOLO(model_path)
