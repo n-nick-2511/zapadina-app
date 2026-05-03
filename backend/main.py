@@ -25,6 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="../frontend"), name="static")
+app.mount("/debug", StaticFiles(directory=str(BASE_DIR)), name="debug")
 
 last_ping = time.time()
 
