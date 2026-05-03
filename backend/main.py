@@ -68,6 +68,8 @@ def get_model():
     if model is None:
         print("Loading model...")
         model = YOLO(model_path)
+        print("🔥 MODEL:", model)
+
     return model
 
 def deg2num(lat, lon, zoom):
