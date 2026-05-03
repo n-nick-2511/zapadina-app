@@ -290,7 +290,12 @@ def process_area(bbox):
                 save_detection_from_tile(x, y, xyxy, conf)
 
         img_out = annotator.result()
-        cv2.imwrite(f"debug_{x}_{y}.jpg", img_out)
+        # cv2.imwrite(f"debug_{x}_{y}.jpg", img_out)
+
+        out_path = os.path.join(BASE_DIR, f"debug_{x}_{y}.jpg")
+        ok = cv2.imwrite(out_path, img_out)
+        print("💾 saved:", out_path, ok)
+
 
         # for r in results:
         #     print("boxes found:", len(r.boxes))
@@ -304,6 +309,8 @@ def process_area(bbox):
 
     status["stage"] = "done"
     print("✅ process_area DONE")
+
+
 
 @app.get("/api/regions")
 def get_regions():
