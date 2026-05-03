@@ -59,7 +59,7 @@ def get_model():
     BASE_DIR = Path(__file__).resolve().parent
     model_path = BASE_DIR / "best.pt"
     if model is None:
-        print("🚀 Loading model...")
+        print("Loading model...")
         model = YOLO(model_path)
     return model
 
