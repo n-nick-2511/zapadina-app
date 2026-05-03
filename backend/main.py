@@ -274,6 +274,7 @@ def process_area(bbox):
     # 🔽 СКАЧИВАНИЕ
     for i, (x, y) in enumerate(tiles, start=1):
         path = download_tile(x, y, 15, "temp_tiles")
+        print(path)
         if path:
             paths.append((path, x, y))
 
