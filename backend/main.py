@@ -13,11 +13,15 @@ from ultralytics import YOLO
 from pathlib import Path
 
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
+
 
 
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI()
+app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
 
 last_ping = time.time()
 
