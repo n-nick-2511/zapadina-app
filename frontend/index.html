@@ -416,7 +416,7 @@ function checkProcessingStatus() {
 
     const interval = setInterval(() => {
 
-        fetch(/api/status")
+        fetch("/api/status")
         .then(res => res.json())
         .then(data => {
 
@@ -537,7 +537,7 @@ function downloadKML() {
     }
 
     window.open(
-        `http://127.0.0.1:8000/api/detections/${currentRegion}/kml`
+        `/api/detections/${currentRegion}/kml`
     );
 }
 
