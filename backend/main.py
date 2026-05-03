@@ -15,7 +15,7 @@ from pathlib import Path
 from fastapi.responses import FileResponse
 
 
-
+BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI()
 
@@ -59,7 +59,7 @@ model = None
 
 def get_model():
     global model
-    BASE_DIR = Path(__file__).resolve().parent
+
     model_path = BASE_DIR / "best.pt"
     if model is None:
         print("Loading model...")
@@ -84,7 +84,7 @@ def get_connection():
 
 @app.get("/")
 def index():
-    return FileResponse("frontend/index.html")
+    return FileResponse(os.path.join(BASE_DIR, "../frontend/index.html"))
 
 @app.get("/api/detections")
 def get_detections():
