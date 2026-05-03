@@ -447,7 +447,7 @@ def watchdog():
     while True:
         time.sleep(5)
 
-        if time.time() - last_ping > 10:
+        if time.time() - last_ping > 10000:
             print("Выключаем сервер")
             os._exit(0)
 
