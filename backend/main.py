@@ -66,10 +66,7 @@ def get_model():
 
     model_path = BASE_DIR / "best1.pt"
     if model is None:
-        print("Loading model...")
         model = YOLO(model_path)
-        print("🔥 MODEL:", model)
-
     return model
 
 def deg2num(lat, lon, zoom):
@@ -291,10 +288,13 @@ def process_area(bbox):
 
     for i, (tile_path, x, y) in enumerate(paths, start=1):
 
+
         results = model.predict(tile_path, conf=0.2, imgsz=512)
 
         for r in results:
+            print("boxes found:", len(r.boxes))
             for box in r.boxes:
+
                 conf = float(box.conf[0])
                 xyxy = box.xyxy[0].tolist()
                 save_detection_from_tile(x, y, xyxy, conf)
