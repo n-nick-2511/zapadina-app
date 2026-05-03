@@ -285,7 +285,7 @@ var geojsonLayer = L.geoJSON(null, {
 
             if (confirm("Удалить эту западину?")) {
 
-                fetch(`http://127.0.0.1:8000/api/detections/${id}`, {
+                fetch(`/api/detections/${id}`, {
                     method: "DELETE"
                 })
                 .then(res => res.json())
@@ -347,7 +347,7 @@ map.addLayer(new L.GridLayer.DebugCoords());
 // РЕГИОНЫ
 // ======================
 
-fetch("http://127.0.0.1:8000/api/regions")
+fetch("/api/regions")
   .then(res => res.json())
   .then(data => {
 
@@ -390,7 +390,7 @@ function loadRegion() {
 
     map.fitBounds(bounds);
 
-    fetch(`http://127.0.0.1:8000/api/detections/${region}`)
+    fetch(`/api/detections/${region}`)
       .then(res => res.json())
       .then(data => {
 
@@ -402,7 +402,7 @@ function loadRegion() {
 }
 
 function loadDetections() {
-    fetch("http://127.0.0.1:8000/api/detections")
+    fetch("/api/detections")
         .then(res => res.json())
         .then(data => {
             geojsonLayer.clearLayers();   // убираем старые объекты
@@ -416,7 +416,7 @@ function checkProcessingStatus() {
 
     const interval = setInterval(() => {
 
-        fetch("http://127.0.0.1:8000/api/status")
+        fetch(/api/status")
         .then(res => res.json())
         .then(data => {
 
@@ -445,7 +445,7 @@ function checkProcessingStatus() {
 
 <!--    const interval = setInterval(() => {-->
 
-<!--        fetch("http://127.0.0.1:8000/api/status")-->
+<!--        fetch("/api/status")-->
 <!--        .then(res => res.json())-->
 <!--        .then(data => {-->
 
@@ -464,7 +464,7 @@ function runDetection() {
 
     startProcessingUI();
 
-    fetch("http://127.0.0.1:8000/api/run-detection", {
+    fetch("/api/run-detection", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({ bbox: window.selectedBBox })
@@ -490,7 +490,7 @@ function runDetection() {
 
 
 
-<!--    fetch("http://127.0.0.1:8000/api/run-detection", {-->
+<!--    fetch("http://85.239.49.27:8000/api/run-detection", {-->
 <!--        method: "POST",-->
 <!--        headers: {"Content-Type": "application/json"},-->
 <!--        body: JSON.stringify({ bbox: window.selectedBBox })-->
@@ -542,7 +542,7 @@ function downloadKML() {
 }
 
 setInterval(() => {
-    fetch("http://127.0.0.1:8000/ping")
+    fetch("/ping")
         .catch(() => {});
 }, 3000);
 
