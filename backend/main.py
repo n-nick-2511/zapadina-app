@@ -15,6 +15,9 @@ from pathlib import Path
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from ultralytics.utils.plotting import Annotator
+import cv2
+
 
 
 print("🔥 THIS FILE IS RUNNING:", __file__)
@@ -64,7 +67,8 @@ model = None
 def get_model():
     global model
 
-    model_path = BASE_DIR / "best1.pt"
+    model_path = BASE_DIR / ("best1"
+                             ".pt")
     if model is None:
         model = YOLO(model_path)
     return model
@@ -272,13 +276,29 @@ def process_area(bbox):
 
         results = model.predict(tile_path, conf=0.2, imgsz=512)
 
-        for r in results:
-            print("boxes found:", len(r.boxes))
-            for box in r.boxes:
+        img = cv2.imread(tile_path)
+        annotator = Annotator(img)
 
-                conf = float(box.conf[0])
+        for r in results:
+            for box in r.boxes:
                 xyxy = box.xyxy[0].tolist()
+                conf = float(box.conf[0])
+
+                annotator.box_label(xyxy, f"{conf:.2f}")
+
+                # твоя логика сохранения
                 save_detection_from_tile(x, y, xyxy, conf)
+
+        img_out = annotator.result()
+        cv2.imwrite(f"debug_{x}_{y}.jpg", img_out)
+
+        # for r in results:
+        #     print("boxes found:", len(r.boxes))
+        #     for box in r.boxes:
+        #
+        #         conf = float(box.conf[0])
+        #         xyxy = box.xyxy[0].tolist()
+        #         save_detection_from_tile(x, y, xyxy, conf)
 
         status["current"] = i  # 🔥 обновляем прогресс
 
