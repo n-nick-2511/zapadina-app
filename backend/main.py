@@ -187,7 +187,8 @@ def tile_bounds(x, y, z):
 def save_detection_from_tile(x, y, xyxy, conf, zoom=15):
     lon1, lat1, lon2, lat2 = tile_bounds(x, y, zoom)
 
-    tile_size = 512
+    tile_size = 256
+    # tile_size = img.shape[1]  # или просто 256
 
     x1, y1, x2, y2 = xyxy
 
