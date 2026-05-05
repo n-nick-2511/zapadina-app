@@ -575,7 +575,7 @@ document.getElementById("showResultsBtn").onclick = function() {
 };
 
 document.getElementById("cancelBtn").onclick = function() {
-    fetch("http://127.0.0.1:8000/api/cancel", {
+    fetch("api/cancel", {
         method: "POST"
     });
 };
