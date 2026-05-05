@@ -40,6 +40,16 @@
 
         animation: spin 1s linear infinite;
     }
+    #cancelBtn {
+        margin-top: 10px;
+        padding: 6px 10px;
+        border: none;
+        border-radius: 6px;
+
+        background: #dc3545; /* красная */
+        color: white;
+        cursor: pointer;
+    }
 
     #showResultsBtn {
         margin-top: 10px;
@@ -170,8 +180,11 @@
 <div id="processingWidget" style="display:none;">
     <div id="processingText">Обработка...</div>
     <div id="processingSpinner"></div>
+    <button id="cancelBtn">Отменить</button>
     <button id="showResultsBtn" style="display:none;">Показать новые западины</button>
 </div>
+
+
 
 
 
@@ -421,43 +434,52 @@ function checkProcessingStatus() {
         .then(data => {
 
             const text = document.getElementById("processingText");
+            const spinner = document.getElementById("processingSpinner");
+            const cancelBtn = document.getElementById("cancelBtn");
+            const showResultsBtn = document.getElementById("showResultsBtn");
 
             if (data.stage === "downloading") {
                 text.innerText = `Загрузка тайлов: ${data.current}/${data.total}`;
+                spinner.style.display = "block";
+                cancelBtn.style.display = "block";
+                showResultsBtn.style.display = "none";
             }
 
             if (data.stage === "detecting") {
                 text.innerText = `Детекция: ${data.current}/${data.total}`;
+                spinner.style.display = "block";
+                cancelBtn.style.display = "block";
+                showResultsBtn.style.display = "none";
             }
 
             if (data.stage === "done") {
                 clearInterval(interval);
-                finishProcessingUI();
+
+                text.innerText = "Готово";
+                spinner.style.display = "none";
+                cancelBtn.style.display = "none";
+                showResultsBtn.style.display = "block";
+            }
+
+            if (data.stage === "cancelled") {
+                clearInterval(interval);
+
+                text.innerText = "Обработка отменена";
+                spinner.style.display = "none";
+                cancelBtn.style.display = "none";
+                showResultsBtn.style.display = "none";
             }
 
         });
 
-    }, 1000); // каждую секунду
+    }, 1000);
 }
 
 
-<!--function checkProcessingStatus() {-->
 
-<!--    const interval = setInterval(() => {-->
 
-<!--        fetch("/api/status")-->
-<!--        .then(res => res.json())-->
-<!--        .then(data => {-->
 
-<!--            if (!data.processing) {-->
-<!--                clearInterval(interval);-->
-<!--                finishProcessingUI(); // показываем кнопку-->
-<!--            }-->
 
-<!--        });-->
-
-<!--    }, 2000); // каждые 2 секунды-->
-<!--}-->
 
 
 function runDetection() {
@@ -550,6 +572,12 @@ setInterval(() => {
 document.getElementById("showResultsBtn").onclick = function() {
     loadDetections(); // обновляем карту
     document.getElementById("processingWidget").style.display = "none";
+};
+
+document.getElementById("cancelBtn").onclick = function() {
+    fetch("http://127.0.0.1:8000/api/cancel", {
+        method: "POST"
+    });
 };
 
 </script>
