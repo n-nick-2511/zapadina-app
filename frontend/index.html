@@ -462,19 +462,14 @@ function checkProcessingStatus() {
             const showResultsBtn = document.getElementById("showResultsBtn");
             const closeBtn = document.getElementById("closeProcessingWidget");
 
-<!--            if (data.stage === "downloading" || data.stage === "detecting") {-->
-<!--                closeBtn.style.display = "none";-->
-<!--            }-->
 
-            if (data.stage === "done" || data.stage === "cancelled") {
-                closeBtn.style.display = "block";
-            }
 
             if (data.stage === "downloading") {
                 text.innerText = `Загрузка тайлов: ${data.current}/${data.total}`;
                 spinner.style.display = "block";
                 cancelBtn.style.display = "block";
                 showResultsBtn.style.display = "none";
+                closeBtn.style.display = "none";
             }
 
             if (data.stage === "detecting") {
@@ -482,6 +477,7 @@ function checkProcessingStatus() {
                 spinner.style.display = "block";
                 cancelBtn.style.display = "block";
                 showResultsBtn.style.display = "none";
+                 closeBtn.style.display = "none";
             }
 
             if (data.stage === "done") {
@@ -500,6 +496,7 @@ function checkProcessingStatus() {
                 spinner.style.display = "none";
                 cancelBtn.style.display = "none";
                 showResultsBtn.style.display = "none";
+                closeBtn.style.display = "block";
             }
 
         });
