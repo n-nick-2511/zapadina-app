@@ -62,6 +62,22 @@
         cursor: pointer;
     }
 
+    #closeProcessingWidget {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+
+        border: none;
+        background: transparent;
+        font-size: 16px;
+        cursor: pointer;
+        color: #666;
+}
+
+    #closeProcessingWidget:hover {
+        color: black;
+    }
+
     @keyframes spin {
         100% { transform: rotate(360deg); }
     }
@@ -177,13 +193,20 @@
     <button onclick="downloadKML()">Скачать KML</button>
 </div>
 
-<div id="processingWidget" style="display:none;">
+
+<div id="processingWidget" style="display:none; position: relative;">
+
+    <button id="closeProcessingWidget">✖</button>
+
     <div id="processingText">Обработка...</div>
     <div id="processingSpinner"></div>
-    <button id="cancelBtn">Отменить</button>
-    <button id="showResultsBtn" style="display:none;">Показать новые западины</button>
-</div>
 
+    <button id="cancelBtn">Отменить</button>
+
+    <button id="showResultsBtn" style="display:none;">
+        Показать новые западины
+    </button>
+</div>
 
 
 
@@ -437,6 +460,15 @@ function checkProcessingStatus() {
             const spinner = document.getElementById("processingSpinner");
             const cancelBtn = document.getElementById("cancelBtn");
             const showResultsBtn = document.getElementById("showResultsBtn");
+            const closeBtn = document.getElementById("closeProcessingWidget");
+
+            if (data.stage === "downloading" || data.stage === "detecting") {
+                closeBtn.style.display = "none";
+            }
+
+            if (data.stage === "done" || data.stage === "cancelled") {
+                closeBtn.style.display = "block";
+            }
 
             if (data.stage === "downloading") {
                 text.innerText = `Загрузка тайлов: ${data.current}/${data.total}`;
@@ -578,6 +610,10 @@ document.getElementById("cancelBtn").onclick = function() {
     fetch("api/cancel", {
         method: "POST"
     });
+};
+
+document.getElementById("closeProcessingWidget").onclick = function() {
+    document.getElementById("processingWidget").style.display = "none";
 };
 
 </script>
