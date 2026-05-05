@@ -194,9 +194,9 @@
 </div>
 
 
-<div id="processingWidget" style="display:none; position: relative;">
+<div id="processingWidget" style="display:none;">
 
-    <button id="closeProcessingWidget">✖</button>
+    <button id="closeProcessingWidget" style="display:none;">✖</button>
 
     <div id="processingText">Обработка...</div>
     <div id="processingSpinner"></div>
@@ -462,9 +462,9 @@ function checkProcessingStatus() {
             const showResultsBtn = document.getElementById("showResultsBtn");
             const closeBtn = document.getElementById("closeProcessingWidget");
 
-            if (data.stage === "downloading" || data.stage === "detecting") {
-                closeBtn.style.display = "none";
-            }
+<!--            if (data.stage === "downloading" || data.stage === "detecting") {-->
+<!--                closeBtn.style.display = "none";-->
+<!--            }-->
 
             if (data.stage === "done" || data.stage === "cancelled") {
                 closeBtn.style.display = "block";
