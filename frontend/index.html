@@ -62,6 +62,10 @@
         cursor: pointer;
     }
 
+    #processingText {
+        padding-right: 24px;
+    }
+
     #closeProcessingWidget {
         position: absolute;
         top: 6px;
@@ -224,13 +228,12 @@ map.addLayer(drawnItems);
 
 const drawControl = new L.Control.Draw({
     draw: {
-        rectangle: true,
         polygon: false,
+        polyline: false,
         circle: false,
-        marker: false
-    },
-    edit: {
-        featureGroup: drawnItems
+        circlemarker: false,
+        marker: false,
+        rectangle: true
     }
 });
 
@@ -270,16 +273,7 @@ L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
     opacity: 0.8
 }).addTo(map);
 
-// слой западин
-<!--var geojsonLayer = L.geoJSON(null, {-->
-<!--    style: {-->
-<!--        color: "red",-->
-<!--        weight: 2,-->
-<!--        fill: false,-->
-<!--        fillColor: "red",-->
-<!--        fillOpacity: 0.0-->
-<!--    }-->
-<!--}).addTo(map);-->
+
 
 var geojsonLayer = L.geoJSON(null, {
 
@@ -336,31 +330,7 @@ var geojsonLayer = L.geoJSON(null, {
 }).addTo(map);
 
 
-<!--var geojsonLayer = L.geoJSON(null, {-->
-<!--    style: {-->
-<!--        color: "red",-->
-<!--        weight: 2,-->
-<!--        fill: true,-->
-<!--        fillColor: "red",-->
-<!--        fillOpacity: 0.0-->
-<!--    },-->
 
-<!--    onEachFeature: function (feature, layer) {-->
-
-<!--        let conf = feature.properties?.confidence;-->
-
-<!--        if (conf !== undefined && conf !== null) {-->
-<!--            layer.bindTooltip(-->
-<!--                `confidence: ${conf.toFixed(2)}`,-->
-<!--                {-->
-<!--                    sticky: true,   // следует за курсором-->
-<!--                    direction: "top",-->
-<!--                    opacity: 0.9-->
-<!--                }-->
-<!--            );-->
-<!--        }-->
-<!--    }-->
-<!--}).addTo(map);-->
 
 
 
