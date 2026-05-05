@@ -30,6 +30,7 @@ app.mount("/debug", StaticFiles(directory="/root/zapadina-app/backend"), name="d
 last_ping = time.time()
 
 processing = False
+cancel_requested = False
 status = {
     "stage": "idle",
     "current": 0,
@@ -239,10 +240,86 @@ def save_detection_from_tile(x, y, xyxy, conf, zoom=15):
 
 
 
+# def process_area(bbox):
+#     global status
+#
+#     print("🚀 process_area START", bbox)
+#
+#     tiles = get_tiles_in_bbox(bbox)
+#     total = len(tiles)
+#
+#     status = {
+#         "stage": "downloading",
+#         "current": 0,
+#         "total": total
+#     }
+#
+#     paths = []
+#
+#     # 🔽 СКАЧИВАНИЕ
+#     for i, (x, y) in enumerate(tiles, start=1):
+#         path = download_tile(x, y, 15, "temp_tiles")
+#         print(path)
+#         if path:
+#             paths.append((path, x, y))
+#
+#         status["current"] = i  # 🔥 обновляем прогресс
+#
+#     # 🔽 ДЕТЕКЦИЯ
+#     status["stage"] = "detecting"
+#     status["current"] = 0
+#     status["total"] = len(paths)
+#
+#     model = get_model()
+#
+#     print(paths)
+#
+#     for i, (tile_path, x, y) in enumerate(paths, start=1):
+#
+#
+#         results = model.predict(tile_path, conf=0.2, imgsz=512)
+#
+#         img = cv2.imread(tile_path)
+#         annotator = Annotator(img)
+#
+#         for r in results:
+#             for box in r.boxes:
+#                 xyxy = box.xyxy[0].tolist()
+#                 conf = float(box.conf[0])
+#
+#                 annotator.box_label(xyxy, f"{conf:.2f}")
+#
+#                 # твоя логика сохранения
+#                 save_detection_from_tile(x, y, xyxy, conf)
+#
+#         img_out = annotator.result()
+#         # cv2.imwrite(f"debug_{x}_{y}.jpg", img_out)
+#
+#         out_path = os.path.join(BASE_DIR, f"debug_{x}_{y}.jpg")
+#         ok = cv2.imwrite(out_path, img_out)
+#         print("💾 saved:", out_path, ok)
+#
+#
+#         # for r in results:
+#         #     print("boxes found:", len(r.boxes))
+#         #     for box in r.boxes:
+#         #
+#         #         conf = float(box.conf[0])
+#         #         xyxy = box.xyxy[0].tolist()
+#         #         save_detection_from_tile(x, y, xyxy, conf)
+#
+#         status["current"] = i  # 🔥 обновляем прогресс
+#
+#     status["stage"] = "done"
+#     print("✅ process_area DONE")
+
 def process_area(bbox):
-    global status
+    global status, cancel_requested, processing
 
     print("🚀 process_area START", bbox)
+
+    processing = True
+    cancel_requested = False
 
     tiles = get_tiles_in_bbox(bbox)
     total = len(tiles)
@@ -255,64 +332,64 @@ def process_area(bbox):
 
     paths = []
 
-    # 🔽 СКАЧИВАНИЕ
-    for i, (x, y) in enumerate(tiles, start=1):
-        path = download_tile(x, y, 15, "temp_tiles")
-        print(path)
-        if path:
-            paths.append((path, x, y))
+    try:
+        # 🔽 СКАЧИВАНИЕ
+        for i, (x, y) in enumerate(tiles, start=1):
 
-        status["current"] = i  # 🔥 обновляем прогресс
+            if cancel_requested:
+                status["stage"] = "cancelled"
+                print("🛑 Cancel during downloading")
+                return
 
-    # 🔽 ДЕТЕКЦИЯ
-    status["stage"] = "detecting"
-    status["current"] = 0
-    status["total"] = len(paths)
+            path = download_tile(x, y, 15, "temp_tiles")
 
-    model = get_model()
+            if path:
+                paths.append((path, x, y))
 
-    print(paths)
+            status["current"] = i
 
-    for i, (tile_path, x, y) in enumerate(paths, start=1):
+        # 🔽 ДЕТЕКЦИЯ
+        status["stage"] = "detecting"
+        status["current"] = 0
+        status["total"] = len(paths)
 
+        model = get_model()
 
-        results = model.predict(tile_path, conf=0.2, imgsz=512)
+        for i, (tile_path, x, y) in enumerate(paths, start=1):
 
-        img = cv2.imread(tile_path)
-        annotator = Annotator(img)
+            if cancel_requested:
+                status["stage"] = "cancelled"
+                print("🛑 Cancel during detecting")
+                return
 
-        for r in results:
-            for box in r.boxes:
-                xyxy = box.xyxy[0].tolist()
-                conf = float(box.conf[0])
+            results = model.predict(tile_path, conf=0.2, imgsz=512)
 
-                annotator.box_label(xyxy, f"{conf:.2f}")
+            img = cv2.imread(tile_path)
+            annotator = Annotator(img)
 
-                # твоя логика сохранения
-                save_detection_from_tile(x, y, xyxy, conf)
+            for r in results:
+                for box in r.boxes:
+                    xyxy = box.xyxy[0].tolist()
+                    conf = float(box.conf[0])
 
-        img_out = annotator.result()
-        # cv2.imwrite(f"debug_{x}_{y}.jpg", img_out)
+                    annotator.box_label(xyxy, f"{conf:.2f}")
+                    save_detection_from_tile(x, y, xyxy, conf)
 
-        out_path = os.path.join(BASE_DIR, f"debug_{x}_{y}.jpg")
-        ok = cv2.imwrite(out_path, img_out)
-        print("💾 saved:", out_path, ok)
+            img_out = annotator.result()
 
+            out_path = os.path.join(BASE_DIR, f"debug_{x}_{y}.jpg")
+            cv2.imwrite(out_path, img_out)
 
-        # for r in results:
-        #     print("boxes found:", len(r.boxes))
-        #     for box in r.boxes:
-        #
-        #         conf = float(box.conf[0])
-        #         xyxy = box.xyxy[0].tolist()
-        #         save_detection_from_tile(x, y, xyxy, conf)
+            status["current"] = i
 
-        status["current"] = i  # 🔥 обновляем прогресс
+        status["stage"] = "done"
+        print("✅ process_area DONE")
 
-    status["stage"] = "done"
-    print("✅ process_area DONE")
+    finally:
+        import shutil
+        shutil.rmtree("temp_tiles", ignore_errors=True)
 
-
+        processing = False
 
 @app.get("/api/regions")
 def get_regions():
@@ -357,10 +434,26 @@ def get_region_detections(region_id: str):
     return result
 
 
+@app.post("/api/cancel")
+def cancel():
+    global cancel_requested
+    cancel_requested = True
+    return {"status": "cancelling"}
 
-
+@app.get("/api/status")
+def get_status():
+    global status, processing
+    return {
+        "processing": processing,
+        **status
+    }
 @app.post("/api/run-detection")
 def run_detection(data: dict, background_tasks: BackgroundTasks):
+    global processing
+
+    if processing:
+        return {"status": "already running"}
+
     bbox = data["bbox"]
 
     print("Получен bbox:", bbox)
@@ -370,14 +463,14 @@ def run_detection(data: dict, background_tasks: BackgroundTasks):
     return {"status": "started"}
 
 
-@app.get("/api/status")
-def get_status():
-    return {
-        "processing": processing,
-        "stage": status["stage"],
-        "current": status["current"],
-        "total": status["total"]
-    }
+# @app.get("/api/status")
+# def get_status():
+#     return {
+#         "processing": processing,
+#         "stage": status["stage"],
+#         "current": status["current"],
+#         "total": status["total"]
+#     }
 
 @app.delete("/api/detections/{det_id}")
 def delete_detection(det_id: int):
