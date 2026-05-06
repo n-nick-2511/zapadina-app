@@ -52,23 +52,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-REGIONS = {
-    "voronezh_anteclise": {
-        "name": "Воронежская антеклиза",
-        "center": [52.0, 43.0],
-        "bbox": [[50.0, 39.0], [54.0, 48.0]]
-    },
-    "moscow_synek": {
-        "name": "Московская синеклиза",
-        "center": [56.0, 39.0],
-        "bbox": [[54.5, 36.0], [57.0, 42.0]]
-    },
-    "minusinsk": {
-        "name": "Минусинская котловина",
-        "center": [53.5, 91.0],
-        "bbox": [[51.0, 87.0], [56.0, 95.0]]
-    }
-}
+# REGIONS = {
+#     "voronezh_anteclise": {
+#         "name": "Воронежская антеклиза",
+#         "center": [52.0, 43.0],
+#         "bbox": [[50.0, 39.0], [54.0, 48.0]]
+#     },
+#     "moscow_synek": {
+#         "name": "Московская синеклиза",
+#         "center": [56.0, 39.0],
+#         "bbox": [[54.5, 36.0], [57.0, 42.0]]
+#     },
+#     "minusinsk": {
+#         "name": "Минусинская котловина",
+#         "center": [53.5, 91.0],
+#         "bbox": [[51.0, 87.0], [56.0, 95.0]]
+#     }
+# }
 
 
 model = None
@@ -398,47 +398,47 @@ def process_area(bbox):
 
         processing = False
 
-@app.get("/api/regions")
-def get_regions():
-    return REGIONS
+# @app.get("/api/regions")
+# def get_regions():
+#     return REGIONS
+#
+#     return result
 
-    return result
-
-@app.get("/api/detections/{region_id}")
-def get_region_detections(region_id: str):
-    region = REGIONS[region_id]
-    (min_lat, min_lon), (max_lat, max_lon) = region["bbox"]
-
-    conn = get_connection()
-    cur = conn.cursor()
-
-    cur.execute(f"""
-        SELECT json_build_object(
-          'type', 'FeatureCollection',
-          'features', json_agg(
-            json_build_object(
-              'type', 'Feature',
-              'geometry', ST_AsGeoJSON(polygon)::json,
-              'properties', json_build_object(
-                'id', id,
-                'confidence', confidence
-              )
-            )
-          )
-        )
-        FROM detections
-        WHERE ST_Intersects(
-            polygon,
-            ST_MakeEnvelope(%s, %s, %s, %s, 4326)
-        );
-    """, (min_lon, min_lat, max_lon, max_lat))
-
-    result = cur.fetchone()[0]
-
-    cur.close()
-    conn.close()
-
-    return result
+# @app.get("/api/detections/{region_id}")
+# def get_region_detections(region_id: str):
+#     region = REGIONS[region_id]
+#     (min_lat, min_lon), (max_lat, max_lon) = region["bbox"]
+#
+#     conn = get_connection()
+#     cur = conn.cursor()
+#
+#     cur.execute(f"""
+#         SELECT json_build_object(
+#           'type', 'FeatureCollection',
+#           'features', json_agg(
+#             json_build_object(
+#               'type', 'Feature',
+#               'geometry', ST_AsGeoJSON(polygon)::json,
+#               'properties', json_build_object(
+#                 'id', id,
+#                 'confidence', confidence
+#               )
+#             )
+#           )
+#         )
+#         FROM detections
+#         WHERE ST_Intersects(
+#             polygon,
+#             ST_MakeEnvelope(%s, %s, %s, %s, 4326)
+#         );
+#     """, (min_lon, min_lat, max_lon, max_lat))
+#
+#     result = cur.fetchone()[0]
+#
+#     cur.close()
+#     conn.close()
+#
+#     return result
 
 
 @app.post("/api/cancel")
@@ -495,30 +495,20 @@ def delete_detection(det_id: int):
 
     return {"status": "ok"}
 
-@app.get("/api/detections/{region_id}/kml")
-def download_kml(region_id: str):
+@app.get("/api/detections/kml")
+def download_kml():
 
     try:
-        print("KML endpoint called:", region_id)
-
-        region = REGIONS[region_id]
-        (min_lat, min_lon), (max_lat, max_lon) = region["bbox"] = region["bbox"]
-
         conn = get_connection()
         cur = conn.cursor()
 
         cur.execute("""
             SELECT ST_AsKML(polygon)
             FROM detections
-            WHERE polygon IS NOT NULL
-            AND ST_Intersects(
-                polygon,
-                ST_MakeEnvelope(%s, %s, %s, %s, 4326)
-            );
-        """, (min_lon, min_lat, max_lon, max_lat))
+            WHERE polygon IS NOT NULL;
+        """)
 
         rows = cur.fetchall()
-        print("🔥 rows:", len(rows))
 
         kml = """<?xml version="1.0" encoding="UTF-8"?>
         <kml xmlns="http://www.opengis.net/kml/2.2">

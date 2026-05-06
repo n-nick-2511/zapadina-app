@@ -150,59 +150,59 @@ map.addLayer(new L.GridLayer.DebugCoords());
 // РЕГИОНЫ
 // ======================
 
-fetch("/api/regions")
-  .then(res => res.json())
-  .then(data => {
-
-      REGIONS = data;
-
-      const select = document.getElementById("regionSelect");
-
-      for (let key in data) {
-          let opt = document.createElement("option");
-          opt.value = key;
-          opt.text = data[key].name;
-          select.appendChild(opt);
-      }
-
-      const first = Object.keys(data)[0];
-      if (first) {
-          select.value = first;
-          loadRegion();
-      }
-  })
-  .catch(err => console.error(err));
+//fetch("/api/regions")
+//  .then(res => res.json())
+//  .then(data => {
+//
+//      REGIONS = data;
+//
+//      const select = document.getElementById("regionSelect");
+//
+//      for (let key in data) {
+//          let opt = document.createElement("option");
+//          opt.value = key;
+//          opt.text = data[key].name;
+//          select.appendChild(opt);
+//      }
+//
+//      const first = Object.keys(data)[0];
+//      if (first) {
+//          select.value = first;
+//          loadRegion();
+//      }
+//  })
+//  .catch(err => console.error(err));
 
 
 // ======================
 // ЗАГРУЗКА РЕГИОНА
 // ======================
 
-function loadRegion() {
-    const region = document.getElementById("regionSelect").value;
-    currentRegion = region;
-
-    const r = REGIONS[region];
-
-    console.log("region:", region);
-    console.log("r:", r);
-    console.log("bbox:", r.bbox);
-
-    const bounds = r.bbox;
-
-
-    map.fitBounds(bounds);
-
-    fetch(`/api/detections/${region}`)
-      .then(res => res.json())
-      .then(data => {
-
-          if (!data.features) data.features = [];
-
-          geojsonLayer.clearLayers();
-          geojsonLayer.addData(data);
-      });
-}
+//function loadRegion() {
+//    const region = document.getElementById("regionSelect").value;
+//    currentRegion = region;
+//
+//    const r = REGIONS[region];
+//
+//    console.log("region:", region);
+//    console.log("r:", r);
+//    console.log("bbox:", r.bbox);
+//
+//    const bounds = r.bbox;
+//
+//
+//    map.fitBounds(bounds);
+//
+//    fetch(`/api/detections/${region}`)
+//      .then(res => res.json())
+//      .then(data => {
+//
+//          if (!data.features) data.features = [];
+//
+//          geojsonLayer.clearLayers();
+//          geojsonLayer.addData(data);
+//      });
+//}
 
 function loadDetections() {
     fetch("/api/detections")
@@ -340,7 +340,7 @@ function downloadKML() {
     }
 
     window.open(
-        `/api/detections/${currentRegion}/kml`
+        `/api/detections/kml`
     );
 }
 
