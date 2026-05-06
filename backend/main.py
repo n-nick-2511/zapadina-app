@@ -142,7 +142,7 @@ def get_detections():
 
 @app.get("/api/kml")
 def download_kml(minLon: float, minLat: float, maxLon: float, maxLat: float):
-
+    print("🔥 KML REQUEST:", minLon, minLat, maxLon, maxLat)
     conn = get_connection()
     cur = conn.cursor()
 
