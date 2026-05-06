@@ -47,6 +47,7 @@ map.on(L.Draw.Event.CREATED, function (e) {
     layer.bindPopup(`
         <b>Выделен участок</b><br><br>
         <button onclick="runDetection()">Запустить детекцию</button><br><br>
+        <button onclick="downloadSelectedKML()">Скачать KML</button><br><br>
         <button onclick="cancelSelection()">Отмена</button>
     `).openPopup();
 
@@ -334,6 +335,20 @@ function finishProcessingUI() {
 function downloadKML() {
     window.open(
         `/api/detections/kml`
+    );
+}
+
+function downloadSelectedKML() {
+
+    if (!window.selectedBBox) {
+        alert("Сначала выдели область");
+        return;
+    }
+
+    const bbox = window.selectedBBox;
+
+    window.open(
+        `/api/kml?minLon=${bbox[0]}&minLat=${bbox[1]}&maxLon=${bbox[2]}&maxLat=${bbox[3]}`
     );
 }
 
