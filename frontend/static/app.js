@@ -95,6 +95,26 @@ var geojsonLayer = L.geoJSON(null, {
                 return;
             }
 
+            const modal = document.getElementById("confirmModal");
+
+            modal.classList.remove("hidden");
+
+            document.getElementById("confirmYes").onclick = function () {
+
+                fetch(`/api/detections/${id}`, {
+                    method: "DELETE"
+                })
+                .then(() => {
+                    geojsonLayer.removeLayer(layer);
+                    modal.classList.add("hidden");
+                });
+
+            };
+
+            document.getElementById("confirmNo").onclick = function () {
+                modal.classList.add("hidden");
+            };
+
         });
     }
 
