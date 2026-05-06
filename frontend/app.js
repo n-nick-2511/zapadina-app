@@ -1,0 +1,342 @@
+document.addEventListener("DOMContentLoaded", function () {
+
+let REGIONS = {};
+let currentRegion = null;
+
+var map = L.map('map').setView([52.55, 42.58], 15);
+
+const drawnItems = new L.FeatureGroup();
+map.addLayer(drawnItems);
+
+const drawControl = new L.Control.Draw({
+    draw: {
+        polygon: false,
+        polyline: false,
+        circle: false,
+        circlemarker: false,
+        marker: false,
+        rectangle: true
+    }
+});
+
+map.addControl(drawControl);
+
+map.on(L.Draw.Event.CREATED, function (e) {
+
+    const layer = e.layer;
+    drawnItems.addLayer(layer);
+
+    const bounds = layer.getBounds();
+
+    const bbox = [
+        bounds.getWest(),
+        bounds.getSouth(),
+        bounds.getEast(),
+        bounds.getNorth()
+    ];
+
+    console.log("BBOX:", bbox);
+
+    // popup с кнопками
+    layer.bindPopup(`
+        <b>Выделен участок</b><br><br>
+        <button onclick="runDetection()">Запустить детекцию</button><br><br>
+        <button onclick="cancelSelection()">Отмена</button>
+    `).openPopup();
+
+    // сохраняем bbox глобально
+    window.selectedBBox = bbox;
+    window.selectedLayer = layer;
+});
+
+// спутник + подписи
+L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    opacity: 0.8
+}).addTo(map);
+
+
+
+var geojsonLayer = L.geoJSON(null, {
+
+    style: {
+        color: "red",
+        weight: 2,
+        fillOpacity: 0.0
+    },
+
+    onEachFeature: function (feature, layer) {
+
+        // =========================
+        // 💡 TOOLTIP (confidence)
+        // =========================
+        let conf = feature.properties?.confidence;
+
+        if (conf !== undefined && conf !== null) {
+            layer.bindTooltip(
+                `confidence: ${conf.toFixed(2)}`,
+                {
+                    sticky: true,
+                    direction: "top",
+                    opacity: 0.9
+                }
+            );
+        }
+
+        // =========================
+        // 🗑 DELETE ON CLICK
+        // =========================
+        layer.on("click", function () {
+
+            const id = feature.properties?.id;
+
+            if (!id) {
+                console.warn("No ID in feature:", feature);
+                return;
+            }
+
+        });
+    }
+
+}).addTo(map);
+
+
+
+
+
+
+// сетка тайлов
+L.GridLayer.DebugCoords = L.GridLayer.extend({
+    createTile: function(coords) {
+        var tile = document.createElement('div');
+        tile.style.outline = '1px solid blue';
+        tile.style.fontSize = '10px';
+        tile.style.color = 'blue';
+        tile.innerHTML = `x: ${coords.x}<br>y: ${coords.y}<br>z: ${coords.z}`;
+        return tile;
+    }
+});
+map.addLayer(new L.GridLayer.DebugCoords());
+
+
+
+// ======================
+// РЕГИОНЫ
+// ======================
+
+fetch("/api/regions")
+  .then(res => res.json())
+  .then(data => {
+
+      REGIONS = data;
+
+      const select = document.getElementById("regionSelect");
+
+      for (let key in data) {
+          let opt = document.createElement("option");
+          opt.value = key;
+          opt.text = data[key].name;
+          select.appendChild(opt);
+      }
+
+      const first = Object.keys(data)[0];
+      if (first) {
+          select.value = first;
+          loadRegion();
+      }
+  })
+  .catch(err => console.error(err));
+
+
+// ======================
+// ЗАГРУЗКА РЕГИОНА
+// ======================
+
+function loadRegion() {
+    const region = document.getElementById("regionSelect").value;
+    currentRegion = region;
+
+    const r = REGIONS[region];
+
+    console.log("region:", region);
+    console.log("r:", r);
+    console.log("bbox:", r.bbox);
+
+    const bounds = r.bbox;
+
+
+    map.fitBounds(bounds);
+
+    fetch(`/api/detections/${region}`)
+      .then(res => res.json())
+      .then(data => {
+
+          if (!data.features) data.features = [];
+
+          geojsonLayer.clearLayers();
+          geojsonLayer.addData(data);
+      });
+}
+
+function loadDetections() {
+    fetch("/api/detections")
+        .then(res => res.json())
+        .then(data => {
+            geojsonLayer.clearLayers();   // убираем старые объекты
+            geojsonLayer.addData(data);   // рисуем новые
+        });
+}
+
+
+
+function checkProcessingStatus() {
+
+    const interval = setInterval(() => {
+
+        fetch("/api/status")
+        .then(res => res.json())
+        .then(data => {
+
+            const text = document.getElementById("processingText");
+            const spinner = document.getElementById("processingSpinner");
+            const cancelBtn = document.getElementById("cancelBtn");
+            const showResultsBtn = document.getElementById("showResultsBtn");
+            const closeBtn = document.getElementById("closeProcessingWidget");
+
+
+
+            if (data.stage === "downloading") {
+                text.innerText = `Загрузка тайлов: ${data.current}/${data.total}`;
+                spinner.style.display = "block";
+                cancelBtn.style.display = "block";
+                showResultsBtn.style.display = "none";
+                closeBtn.style.display = "none";
+            }
+
+            if (data.stage === "detecting") {
+                text.innerText = `Детекция: ${data.current}/${data.total}`;
+                spinner.style.display = "block";
+                cancelBtn.style.display = "block";
+                showResultsBtn.style.display = "none";
+                 closeBtn.style.display = "none";
+            }
+
+            if (data.stage === "done") {
+                clearInterval(interval);
+
+                text.innerText = "Готово";
+                spinner.style.display = "none";
+                cancelBtn.style.display = "none";
+                showResultsBtn.style.display = "block";
+            }
+
+            if (data.stage === "cancelled") {
+                clearInterval(interval);
+
+                text.innerText = "Детекция отменена";
+                spinner.style.display = "none";
+                cancelBtn.style.display = "none";
+                showResultsBtn.style.display = "none";
+                closeBtn.style.display = "block";
+            }
+
+        });
+
+    }, 1000);
+}
+
+
+
+
+
+
+
+
+function runDetection() {
+
+    startProcessingUI();
+
+    fetch("/api/run-detection", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ bbox: window.selectedBBox })
+    })
+    .then(res => res.json())
+    .then(() => {
+
+        // закрываем popup
+        if (window.selectedLayer) {
+            window.selectedLayer.closePopup();
+            map.removeLayer(window.selectedLayer);
+        }
+
+        window.selectedBBox = null;
+
+        // 🔥 ВАЖНО — начинаем слушать статус
+        checkProcessingStatus();
+
+    });
+}
+
+
+
+
+
+
+function cancelSelection() {
+    map.removeLayer(window.selectedLayer);
+}
+
+function startProcessingUI() {
+    document.getElementById("processingWidget").style.display = "block";
+    document.getElementById("processingSpinner").style.display = "block";
+    document.getElementById("processingText").innerText = "Обработка...";
+    document.getElementById("showResultsBtn").style.display = "none";
+}
+
+function finishProcessingUI() {
+    document.getElementById("processingSpinner").style.display = "none";
+    document.getElementById("processingText").innerText = "Готово ✅";
+    document.getElementById("showResultsBtn").style.display = "block";
+}
+
+
+// ======================
+// KML DOWNLOAD
+// ======================
+
+function downloadKML() {
+    console.log("currentRegion:", currentRegion);
+
+    if (!currentRegion) {
+        alert("Сначала выбери регион");
+        return;
+    }
+
+    window.open(
+        `/api/detections/${currentRegion}/kml`
+    );
+}
+
+setInterval(() => {
+    fetch("/ping")
+        .catch(() => {});
+}, 3000);
+
+
+document.getElementById("showResultsBtn").onclick = function() {
+    loadDetections(); // обновляем карту
+    document.getElementById("processingWidget").style.display = "none";
+};
+
+document.getElementById("cancelBtn").onclick = function() {
+    fetch("api/cancel", {
+        method: "POST"
+    });
+};
+
+document.getElementById("closeProcessingWidget").onclick = function() {
+    document.getElementById("processingWidget").style.display = "none";
+};
+
+});
