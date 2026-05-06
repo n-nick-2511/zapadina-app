@@ -380,6 +380,7 @@ document.getElementById("closeProcessingWidget").onclick = function() {
 window.runDetection = runDetection;
 window.cancelSelection = cancelSelection;
 window.downloadKML = downloadKML;
+window.downloadSelectedKML = downloadSelectedKML;
 //window.loadRegion = loadRegion;
 
 loadDetections();
