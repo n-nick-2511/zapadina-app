@@ -81,6 +81,22 @@
         height: 100vh;
     }
 
+    #topPanel {
+    position: absolute;
+    top: 10px;
+    left: 50px;
+    z-index: 1000;
+
+    display: flex;
+    gap: 10px;
+
+    background: rgba(255,255,255,0.9);
+    padding: 10px;
+    border-radius: 10px;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
     /* 🔥 панель */
     #controls {
         position: absolute;
