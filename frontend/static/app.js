@@ -332,13 +332,6 @@ function finishProcessingUI() {
 // ======================
 
 function downloadKML() {
-    console.log("currentRegion:", currentRegion);
-
-    if (!currentRegion) {
-        alert("Сначала выбери регион");
-        return;
-    }
-
     window.open(
         `/api/detections/kml`
     );
@@ -368,7 +361,7 @@ document.getElementById("closeProcessingWidget").onclick = function() {
 window.runDetection = runDetection;
 window.cancelSelection = cancelSelection;
 window.downloadKML = downloadKML;
-window.loadRegion = loadRegion;
+//window.loadRegion = loadRegion;
 
-
+loadDetections();
 });
