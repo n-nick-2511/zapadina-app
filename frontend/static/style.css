@@ -213,3 +213,15 @@
         gap: 10px;
         justify-content: flex-end;
     }
+
+    .leaflet-control-geocoder {
+    border-radius: 12px !important;
+    overflow: hidden;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .leaflet-control-geocoder-form input {
+    padding: 8px !important;
+    font-size: 14px;
+    }

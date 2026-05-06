@@ -5,6 +5,12 @@ let currentRegion = null;
 
 var map = L.map('map').setView([52.55, 42.58], 15);
 
+L.Control.geocoder({
+    defaultMarkGeocode: true,
+    placeholder: "Поиск..."
+})
+.addTo(map);
+
 const drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
 
