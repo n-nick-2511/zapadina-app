@@ -27,11 +27,11 @@ app = FastAPI()
 
 app.mount(
     "/static",
-    StaticFiles(directory=BASE_DIR / "frontend" / "static"),
+    StaticFiles(directory=BASE_DIR.parent / "frontend" / "static"),
     name="static"
 )
 app.mount("/debug", StaticFiles(directory="/root/zapadina-app/backend"), name="debug")
-BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 last_ping = time.time()
