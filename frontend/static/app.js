@@ -358,6 +358,8 @@ setInterval(() => {
 }, 3000);
 
 
+
+
 document.getElementById("showResultsBtn").onclick = function() {
     loadDetections(); // обновляем карту
     document.getElementById("processingWidget").style.display = "none";
