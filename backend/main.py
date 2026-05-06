@@ -140,7 +140,57 @@ def get_detections():
 
     return result
 
+@app.get("/api/kml")
+def download_kml(minLon: float, minLat: float, maxLon: float, maxLat: float):
 
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT ST_AsKML(polygon)
+        FROM detections
+        WHERE polygon IS NOT NULL
+        AND ST_Intersects(
+            polygon,
+            ST_MakeEnvelope(%s, %s, %s, %s, 4326)
+        );
+    """, (minLon, minLat, maxLon, maxLat))
+
+    rows = cur.fetchall()
+
+    kml = """<?xml version="1.0" encoding="UTF-8"?>
+    <kml xmlns="http://www.opengis.net/kml/2.2">
+    <Document>
+
+    <Style id="outlineOnly">
+        <LineStyle>
+            <color>ff0000ff</color>
+            <width>2</width>
+        </LineStyle>
+        <PolyStyle>
+            <fill>0</fill>
+            <outline>1</outline>
+        </PolyStyle>
+    </Style>
+    """
+
+    for row in rows:
+        kml += f"""
+        <Placemark>
+            <styleUrl>#outlineOnly</styleUrl>
+            {row[0]}
+        </Placemark>
+        """
+
+    kml += "</Document></kml>"
+
+    cur.close()
+    conn.close()
+
+    return Response(
+        content=kml,
+        media_type="application/vnd.google-earth.kml+xml"
+    )
 
 def download_tile(x, y, z, save_dir):
     url = f"https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
