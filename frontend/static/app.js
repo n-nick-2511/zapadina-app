@@ -339,4 +339,10 @@ document.getElementById("closeProcessingWidget").onclick = function() {
     document.getElementById("processingWidget").style.display = "none";
 };
 
+window.runDetection = runDetection;
+window.cancelSelection = cancelSelection;
+window.downloadKML = downloadKML;
+window.loadRegion = loadRegion;
+
+
 });
