@@ -24,8 +24,15 @@ print("🔥 THIS FILE IS RUNNING:", __file__)
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="../frontend"), name="static")
+
+app.mount(
+    "/static",
+    StaticFiles(directory=BASE_DIR / "frontend" / "static"),
+    name="static"
+)
 app.mount("/debug", StaticFiles(directory="/root/zapadina-app/backend"), name="debug")
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 last_ping = time.time()
 
