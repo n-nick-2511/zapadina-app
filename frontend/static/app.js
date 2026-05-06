@@ -347,9 +347,11 @@ function downloadSelectedKML() {
 
     const bbox = window.selectedBBox;
 
-    window.open(
-        `/api/kml?minLon=${bbox[0]}&minLat=${bbox[1]}&maxLon=${bbox[2]}&maxLat=${bbox[3]}`
-    );
+    const url = `/api/kml?minLon=${bbox[0]}&minLat=${bbox[1]}&maxLon=${bbox[2]}&maxLat=${bbox[3]}`;
+
+    console.log("KML URL:", url);
+
+    window.open(url);
 }
 
 setInterval(() => {
