@@ -8,6 +8,10 @@ var map = L.map('map', {
     zoomControl: false
 }).setView([52.55, 42.58], 15);
 
+map.on('draw:drawstart', function () {
+    document.querySelectorAll('.leaflet-draw-tooltip')
+        .forEach(el => el.remove());
+});
 // +/- на карте
 L.control.zoom({
     position: 'topright'
