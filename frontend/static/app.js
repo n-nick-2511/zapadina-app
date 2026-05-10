@@ -56,6 +56,7 @@ map.addLayer(drawnItems);
 
 L.drawLocal.draw.handlers.rectangle.tooltip.start = "";
 L.drawLocal.draw.handlers.rectangle.tooltip.cont = "";
+L.drawLocal.draw.handlers.rectangle.tooltip.actions = "";
 L.drawLocal.draw.handlers.simpleshape.tooltip.end = "";
 
 const drawControl = new L.Control.Draw({
