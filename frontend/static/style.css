@@ -337,3 +337,7 @@
         opacity: 0 !important;
         visibility: hidden !important;
     }
+
+    .leaflet-draw-actions {
+         display: none !important;
+    }
