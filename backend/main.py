@@ -120,9 +120,56 @@ def get_detections():
 
     return result
 
+@app.get("/api/detections/kml/all")
+def download_all_kml():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+           SELECT ST_AsKML(polygon)
+           FROM detections
+           );
+       """)
+
+    rows = cur.fetchall()
+
+    kml = """<?xml version="1.0" encoding="UTF-8"?>
+       <kml xmlns="http://www.opengis.net/kml/2.2">
+       <Document>
+
+       <Style id="outlineOnly">
+           <LineStyle>
+               <color>ff0000ff</color>
+               <width>2</width>
+           </LineStyle>
+           <PolyStyle>
+               <fill>0</fill>
+               <outline>1</outline>
+           </PolyStyle>
+       </Style>
+       """
+
+    for row in rows:
+        kml += f"""
+           <Placemark>
+               <styleUrl>#outlineOnly</styleUrl>
+               {row[0]}
+           </Placemark>
+           """
+
+    kml += "</Document></kml>"
+
+    cur.close()
+    conn.close()
+
+    return Response(
+        content=kml,
+        media_type="application/vnd.google-earth.kml+xml"
+    )
+
 @app.get("/api/kml")
 def download_kml(minLon: float, minLat: float, maxLon: float, maxLat: float):
-    print("🔥 KML REQUEST:", minLon, minLat, maxLon, maxLat)
+    print("KML REQUEST:", minLon, minLat, maxLon, maxLat)
     conn = get_connection()
     cur = conn.cursor()
 

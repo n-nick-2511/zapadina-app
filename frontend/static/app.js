@@ -356,9 +356,7 @@ function finishProcessingUI() {
 // ======================
 
 function downloadKML() {
-    window.open(
-        `/api/detections/kml`
-    );
+    window.open(`/api/detections/kml/all`);
 }
 
 function downloadSelectedKML() {
