@@ -54,7 +54,9 @@ L.control.zoom({
 const drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
 
-
+L.drawLocal.draw.handlers.rectangle.tooltip.start = "";
+L.drawLocal.draw.handlers.rectangle.tooltip.cont = "";
+L.drawLocal.draw.handlers.simpleshape.tooltip.end = "";
 
 const drawControl = new L.Control.Draw({
     position: 'topleft',
@@ -105,9 +107,9 @@ const downloadControl = L.Control.extend({
 
 map.addControl(new downloadControl());
 
-L.drawLocal.draw.toolbar.actions.title = "";
-L.drawLocal.draw.toolbar.actions.text = "";
-L.drawLocal.draw.handlers.rectangle.tooltip.start = "";
+//L.drawLocal.draw.toolbar.actions.title = "";
+//L.drawLocal.draw.toolbar.actions.text = "";
+//L.drawLocal.draw.handlers.rectangle.tooltip.start = "";
 
 document.querySelector('.leaflet-draw-draw-rectangle')
     .title = "Выделить область";

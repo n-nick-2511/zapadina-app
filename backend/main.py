@@ -218,7 +218,10 @@ def download_kml(minLon: float, minLat: float, maxLon: float, maxLat: float):
 
     return Response(
         content=kml,
-        media_type="application/vnd.google-earth.kml+xml"
+        media_type="application/vnd.google-earth.kml+xml",
+        headers={
+            "Content-Disposition": "attachment; filename=detections.kml"
+        }
     )
 
 def download_tile(x, y, z, save_dir):
