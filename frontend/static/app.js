@@ -3,18 +3,35 @@ document.addEventListener("DOMContentLoaded", function () {
 let REGIONS = {};
 let currentRegion = null;
 
-var map = L.map('map').setView([52.55, 42.58], 15);
+
+var map = L.map('map', {
+    zoomControl: false
+}).setView([52.55, 42.58], 15);
+
+// +/- на карте
+L.control.zoom({
+    position: 'topright'
+}).addTo(map);
+
 
 L.Control.geocoder({
     defaultMarkGeocode: true,
-    placeholder: "Поиск..."
-})
-.addTo(map);
+    placeholder: "Поиск...",
+    position: "topleft"
+}).addTo(map);
 
 const drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
 
+
+
+
+
+
+
 const drawControl = new L.Control.Draw({
+    position: 'topleft',
+
     draw: {
         polygon: false,
         polyline: false,
@@ -26,6 +43,10 @@ const drawControl = new L.Control.Draw({
 });
 
 map.addControl(drawControl);
+
+L.drawLocal.draw.toolbar.actions.title = "";
+L.drawLocal.draw.toolbar.actions.text = "";
+L.drawLocal.draw.handlers.rectangle.tooltip.start = "";
 
 document.querySelector('.leaflet-draw-draw-rectangle')
     .title = "Выделить область";

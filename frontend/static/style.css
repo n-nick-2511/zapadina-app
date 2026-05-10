@@ -255,3 +255,41 @@
         top: 3px;
         left: 7px;
     }
+
+
+
+    /* общий контейнер */
+    .leaflet-top.leaflet-left {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    /* убираем отступы между контролами */
+    .leaflet-top.leaflet-left .leaflet-control {
+        margin-top: 0;
+        margin-left: 10px;
+    }
+
+    /* делаем единый вид */
+    .leaflet-control {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* верхняя кнопка */
+    .leaflet-top.leaflet-left .leaflet-control:first-child {
+        border-top-left-radius: 10px !important;
+        border-top-right-radius: 10px !important;
+    }
+
+    /* нижняя кнопка */
+    .leaflet-top.leaflet-left .leaflet-control:last-child {
+        border-bottom-left-radius: 10px !important;
+        border-bottom-right-radius: 10px !important;
+    }
+
+    /* тонкие разделители */
+    .leaflet-control a {
+        border-bottom: 1px solid #ddd !important;
+    }
