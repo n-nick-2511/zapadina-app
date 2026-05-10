@@ -34,10 +34,13 @@ searchControl.onAdd = function () {
 
 searchControl.addTo(map);
 
-document.addEventListener("click", function(e) {
+setTimeout(() => {
 
-    if (e.target.id === "searchBtn") {
+    const btn = document.getElementById("searchBtn");
 
+    if (!btn) return;
+
+    L.DomEvent.on(btn, "click", function (e) {
         e.preventDefault();
 
         const geocoderBtn = document.querySelector(".leaflet-control-geocoder-icon");
@@ -45,8 +48,9 @@ document.addEventListener("click", function(e) {
         if (geocoderBtn) {
             geocoderBtn.click();
         }
-    }
-});
+    });
+
+}, 0);
 
 
 const drawnItems = new L.FeatureGroup();
