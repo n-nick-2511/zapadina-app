@@ -25,9 +25,18 @@ searchControl.onAdd = function () {
 
     const div = L.DomUtil.create("div", "leaflet-bar leaflet-control");
 
-    div.innerHTML = `
-        <a href="#" id="searchBtn" title="Поиск">🔍</a>
-    `;
+    const a = L.DomUtil.create("a", "", div);
+    a.innerHTML = "🔍";
+    a.href = "#";
+    a.title = "Поиск";
+
+    L.DomEvent.disableClickPropagation(div);
+
+    a.onclick = function (e) {
+        e.preventDefault();
+
+        geocoder.expand();
+    };
 
     return div;
 };
