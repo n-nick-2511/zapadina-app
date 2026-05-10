@@ -6,7 +6,7 @@ let currentRegion = null;
 
 var map = L.map('map', {
     zoomControl: false
-}).setView([52.55, 42.58], 15);
+}).setView([52.55, 42.58], 11);
 
 //map.on('draw:drawstart', function () {
 //    document.querySelectorAll('.leaflet-draw-tooltip')
@@ -261,7 +261,7 @@ function checkProcessingStatus() {
 
 
             if (data.stage === "downloading") {
-                text.innerText = `Загрузка ов: ${data.current}/${data.total}`;
+                text.innerText = `Загрузка тайлов: ${data.current}/${data.total}`;
                 spinner.style.display = "block";
                 cancelBtn.style.display = "block";
                 showResultsBtn.style.display = "none";
