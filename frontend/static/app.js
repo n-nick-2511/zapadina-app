@@ -133,77 +133,18 @@ var geojsonLayer = L.geoJSON(null, {
 
 
 // сетка тайлов
-L.GridLayer.DebugCoords = L.GridLayer.extend({
-    createTile: function(coords) {
-        var tile = document.createElement('div');
-        tile.style.outline = '1px solid blue';
-        tile.style.fontSize = '10px';
-        tile.style.color = 'blue';
-        tile.innerHTML = `x: ${coords.x}<br>y: ${coords.y}<br>z: ${coords.z}`;
-        return tile;
-    }
-});
-map.addLayer(new L.GridLayer.DebugCoords());
+//L.GridLayer.DebugCoords = L.GridLayer.extend({
+//    createTile: function(coords) {
+//        var tile = document.createElement('div');
+//        tile.style.outline = '1px solid blue';
+//        tile.style.fontSize = '10px';
+//        tile.style.color = 'blue';
+//        tile.innerHTML = `x: ${coords.x}<br>y: ${coords.y}<br>z: ${coords.z}`;
+//        return tile;
+//    }
+//});
+//map.addLayer(new L.GridLayer.DebugCoords());
 
-
-
-// ======================
-// РЕГИОНЫ
-// ======================
-
-//fetch("/api/regions")
-//  .then(res => res.json())
-//  .then(data => {
-//
-//      REGIONS = data;
-//
-//      const select = document.getElementById("regionSelect");
-//
-//      for (let key in data) {
-//          let opt = document.createElement("option");
-//          opt.value = key;
-//          opt.text = data[key].name;
-//          select.appendChild(opt);
-//      }
-//
-//      const first = Object.keys(data)[0];
-//      if (first) {
-//          select.value = first;
-//          loadRegion();
-//      }
-//  })
-//  .catch(err => console.error(err));
-
-
-// ======================
-// ЗАГРУЗКА РЕГИОНА
-// ======================
-
-//function loadRegion() {
-//    const region = document.getElementById("regionSelect").value;
-//    currentRegion = region;
-//
-//    const r = REGIONS[region];
-//
-//    console.log("region:", region);
-//    console.log("r:", r);
-//    console.log("bbox:", r.bbox);
-//
-//    const bounds = r.bbox;
-//
-//
-//    map.fitBounds(bounds);
-//
-//    fetch(`/api/detections/${region}`)
-//      .then(res => res.json())
-//      .then(data => {
-//
-//          if (!data.features) data.features = [];
-//
-//          geojsonLayer.clearLayers();
-//          geojsonLayer.addData(data);
-//      });
-//}
 
 function loadDetections() {
     fetch("/api/detections")
@@ -381,7 +322,7 @@ window.runDetection = runDetection;
 window.cancelSelection = cancelSelection;
 window.downloadKML = downloadKML;
 window.downloadSelectedKML = downloadSelectedKML;
-//window.loadRegion = loadRegion;
+
 
 loadDetections();
 });

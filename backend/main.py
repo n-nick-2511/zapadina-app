@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
-import traceback
 import time
 import threading
 import os
@@ -31,7 +30,6 @@ app.mount(
     name="static"
 )
 app.mount("/debug", StaticFiles(directory="/root/zapadina-app/backend"), name="debug")
-# BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 last_ping = time.time()
@@ -51,24 +49,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# REGIONS = {
-#     "voronezh_anteclise": {
-#         "name": "Воронежская антеклиза",
-#         "center": [52.0, 43.0],
-#         "bbox": [[50.0, 39.0], [54.0, 48.0]]
-#     },
-#     "moscow_synek": {
-#         "name": "Московская синеклиза",
-#         "center": [56.0, 39.0],
-#         "bbox": [[54.5, 36.0], [57.0, 42.0]]
-#     },
-#     "minusinsk": {
-#         "name": "Минусинская котловина",
-#         "center": [53.5, 91.0],
-#         "bbox": [[51.0, 87.0], [56.0, 95.0]]
-#     }
-# }
 
 
 model = None
@@ -226,7 +206,7 @@ def get_tiles_in_bbox(bbox, zoom=15):
 
     for x in range(min(x1, x2), max(x1, x2) + 1):
         for y in range(min(y1, y2), max(y1, y2) + 1):
-            print(f"tile: {x}, {y}")  # 🔥 ключевой лог
+            print(f"tile: {x}, {y}")
             tiles.append((x, y))
 
     return tiles
@@ -246,7 +226,6 @@ def save_detection_from_tile(x, y, xyxy, conf, zoom=15):
     lon1, lat1, lon2, lat2 = tile_bounds(x, y, zoom)
 
     tile_size = 256
-    # tile_size = img.shape[1]  # или просто 256
 
     x1, y1, x2, y2 = xyxy
 
@@ -279,101 +258,12 @@ def save_detection_from_tile(x, y, xyxy, conf, zoom=15):
     conn.commit()
     cur.close()
     conn.close()
-# def get_and_download_tiles(bbox, zoom=15):
-#     tiles = get_tiles_in_bbox(bbox, zoom)
-#
-#     if len(tiles) > 1000:
-#         print("Слишком большая область")
-#         return []
-#
-#     paths = []
-#
-#     for x, y in tiles:
-#         path = download_tile(x, y, zoom, "temp_tiles")
-#         if path:
-#             paths.append((path, x, y))
-#
-#     return paths
 
-
-
-# def process_area(bbox):
-#     global status
-#
-#     print("🚀 process_area START", bbox)
-#
-#     tiles = get_tiles_in_bbox(bbox)
-#     total = len(tiles)
-#
-#     status = {
-#         "stage": "downloading",
-#         "current": 0,
-#         "total": total
-#     }
-#
-#     paths = []
-#
-#     # 🔽 СКАЧИВАНИЕ
-#     for i, (x, y) in enumerate(tiles, start=1):
-#         path = download_tile(x, y, 15, "temp_tiles")
-#         print(path)
-#         if path:
-#             paths.append((path, x, y))
-#
-#         status["current"] = i  # 🔥 обновляем прогресс
-#
-#     # 🔽 ДЕТЕКЦИЯ
-#     status["stage"] = "detecting"
-#     status["current"] = 0
-#     status["total"] = len(paths)
-#
-#     model = get_model()
-#
-#     print(paths)
-#
-#     for i, (tile_path, x, y) in enumerate(paths, start=1):
-#
-#
-#         results = model.predict(tile_path, conf=0.2, imgsz=512)
-#
-#         img = cv2.imread(tile_path)
-#         annotator = Annotator(img)
-#
-#         for r in results:
-#             for box in r.boxes:
-#                 xyxy = box.xyxy[0].tolist()
-#                 conf = float(box.conf[0])
-#
-#                 annotator.box_label(xyxy, f"{conf:.2f}")
-#
-#                 # твоя логика сохранения
-#                 save_detection_from_tile(x, y, xyxy, conf)
-#
-#         img_out = annotator.result()
-#         # cv2.imwrite(f"debug_{x}_{y}.jpg", img_out)
-#
-#         out_path = os.path.join(BASE_DIR, f"debug_{x}_{y}.jpg")
-#         ok = cv2.imwrite(out_path, img_out)
-#         print("💾 saved:", out_path, ok)
-#
-#
-#         # for r in results:
-#         #     print("boxes found:", len(r.boxes))
-#         #     for box in r.boxes:
-#         #
-#         #         conf = float(box.conf[0])
-#         #         xyxy = box.xyxy[0].tolist()
-#         #         save_detection_from_tile(x, y, xyxy, conf)
-#
-#         status["current"] = i  # 🔥 обновляем прогресс
-#
-#     status["stage"] = "done"
-#     print("✅ process_area DONE")
 
 def process_area(bbox):
     global status, cancel_requested, processing
 
-    print("🚀 process_area START", bbox)
+    print(" process_area START", bbox)
 
     processing = True
     cancel_requested = False
@@ -395,7 +285,7 @@ def process_area(bbox):
 
             if cancel_requested:
                 status["stage"] = "cancelled"
-                print("🛑 Cancel during downloading")
+                print(" Cancel during downloading")
                 return
 
             path = download_tile(x, y, 15, "temp_tiles")
@@ -416,7 +306,7 @@ def process_area(bbox):
 
             if cancel_requested:
                 status["stage"] = "cancelled"
-                print("🛑 Cancel during detecting")
+                print("Cancel during detecting")
                 return
 
             results = model.predict(tile_path, conf=0.2, imgsz=512)
@@ -448,47 +338,6 @@ def process_area(bbox):
 
         processing = False
 
-# @app.get("/api/regions")
-# def get_regions():
-#     return REGIONS
-#
-#     return result
-
-# @app.get("/api/detections/{region_id}")
-# def get_region_detections(region_id: str):
-#     region = REGIONS[region_id]
-#     (min_lat, min_lon), (max_lat, max_lon) = region["bbox"]
-#
-#     conn = get_connection()
-#     cur = conn.cursor()
-#
-#     cur.execute(f"""
-#         SELECT json_build_object(
-#           'type', 'FeatureCollection',
-#           'features', json_agg(
-#             json_build_object(
-#               'type', 'Feature',
-#               'geometry', ST_AsGeoJSON(polygon)::json,
-#               'properties', json_build_object(
-#                 'id', id,
-#                 'confidence', confidence
-#               )
-#             )
-#           )
-#         )
-#         FROM detections
-#         WHERE ST_Intersects(
-#             polygon,
-#             ST_MakeEnvelope(%s, %s, %s, %s, 4326)
-#         );
-#     """, (min_lon, min_lat, max_lon, max_lat))
-#
-#     result = cur.fetchone()[0]
-#
-#     cur.close()
-#     conn.close()
-#
-#     return result
 
 
 @app.post("/api/cancel")
@@ -520,15 +369,6 @@ def run_detection(data: dict, background_tasks: BackgroundTasks):
     return {"status": "started"}
 
 
-# @app.get("/api/status")
-# def get_status():
-#     return {
-#         "processing": processing,
-#         "stage": status["stage"],
-#         "current": status["current"],
-#         "total": status["total"]
-#     }
-
 @app.delete("/api/detections/{det_id}")
 def delete_detection(det_id: int):
     conn = get_connection()
@@ -545,59 +385,7 @@ def delete_detection(det_id: int):
 
     return {"status": "ok"}
 
-# @app.get("/api/detections/kml")
-# def download_kml():
-#
-#     try:
-#         conn = get_connection()
-#         cur = conn.cursor()
-#
-#         cur.execute("""
-#             SELECT ST_AsKML(polygon)
-#             FROM detections
-#             WHERE polygon IS NOT NULL;
-#         """)
-#
-#         rows = cur.fetchall()
-#
-#         kml = """<?xml version="1.0" encoding="UTF-8"?>
-#         <kml xmlns="http://www.opengis.net/kml/2.2">
-#         <Document>
-#
-#         <Style id="outlineOnly">
-#             <LineStyle>
-#                 <color>ff0000ff</color>
-#                 <width>2</width>
-#             </LineStyle>
-#             <PolyStyle>
-#                 <fill>0</fill>
-#                 <outline>1</outline>
-#             </PolyStyle>
-#         </Style>
-#         """
-#
-#         for row in rows:
-#             kml += f"""
-#             <Placemark>
-#                 <styleUrl>#outlineOnly</styleUrl>
-#                 {row[0]}
-#             </Placemark>
-#             """
-#
-#         kml += "</Document></kml>"
-#
-#         cur.close()
-#         conn.close()
-#
-#         return Response(
-#             content=kml,
-#             media_type="application/vnd.google-earth.kml+xml"
-#         )
-#
-#     except Exception as e:
-#         print("KML ERROR:", e)
-#         traceback.print_exc()
-#         return {"error": str(e)}
+
 
 def watchdog():
     global last_ping
