@@ -77,18 +77,18 @@ var geojsonLayer = L.geoJSON(null, {
         // =========================
         // 💡 TOOLTIP (confidence)
         // =========================
-        let conf = feature.properties?.confidence;
-
-        if (conf !== undefined && conf !== null) {
-            layer.bindTooltip(
-                `confidence: ${conf.toFixed(2)}`,
-                {
-                    sticky: true,
-                    direction: "top",
-                    opacity: 0.9
-                }
-            );
-        }
+//        let conf = feature.properties?.confidence;
+//
+//        if (conf !== undefined && conf !== null) {
+//            layer.bindTooltip(
+//                `confidence: ${conf.toFixed(2)}`,
+//                {
+//                    sticky: true,
+//                    direction: "top",
+//                    opacity: 0.9
+//                }
+//            );
+//        }
 
         // =========================
         // 🗑 DELETE ON CLICK
@@ -174,7 +174,7 @@ function checkProcessingStatus() {
 
 
             if (data.stage === "downloading") {
-                text.innerText = `Загрузка тайлов: ${data.current}/${data.total}`;
+                text.innerText = `Загрузка ов: ${data.current}/${data.total}`;
                 spinner.style.display = "block";
                 cancelBtn.style.display = "block";
                 showResultsBtn.style.display = "none";
