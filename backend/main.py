@@ -163,7 +163,10 @@ def download_all_kml():
 
     return Response(
         content=kml,
-        media_type="application/vnd.google-earth.kml+xml"
+        media_type="application/vnd.google-earth.kml+xml",
+        headers={
+            "Content-Disposition": "attachment; filename=all_detections.kml"
+        }
     )
 
 @app.get("/api/kml")
