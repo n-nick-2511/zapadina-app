@@ -230,16 +230,41 @@
         justify-content: flex-end;
     }
 
-    .leaflet-control-geocoder {
-    border-radius: 12px !important;
-    overflow: hidden;
 
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
 
     .leaflet-control-geocoder-form input {
     padding: 8px !important;
     font-size: 14px;
+    }
+
+        /* контейнер поиска */
+    .leaflet-control-geocoder {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* кнопка поиска */
+    .leaflet-control-geocoder-icon {
+        background-color: white !important;
+        border-radius: 0 !important;
+
+        width: 30px !important;
+        height: 30px !important;
+
+        border-bottom: 1px solid #ccc !important;
+
+        transition: none !important;
+    }
+
+    /* hover */
+    .leaflet-control-geocoder-icon:hover {
+        background-color: #f4f4f4 !important;
+    }
+
+    /* убираем синий */
+    .leaflet-control-geocoder-form input {
+        outline: none !important;
+        box-shadow: none !important;
     }
 
     .leaflet-draw-draw-rectangle {
