@@ -44,6 +44,40 @@ const drawControl = new L.Control.Draw({
 
 map.addControl(drawControl);
 
+const downloadControl = L.Control.extend({
+
+    options: {
+        position: 'topleft'
+    },
+
+    onAdd: function () {
+
+        const container = L.DomUtil.create(
+            'div',
+            'leaflet-bar leaflet-control'
+        );
+
+        container.innerHTML = `
+            <a href="#"
+               title="Скачать все детекции в KML"
+               id="downloadKMLControl">
+               ⭳
+            </a>
+        `;
+
+        L.DomEvent.disableClickPropagation(container);
+
+        container.onclick = function(e) {
+            e.preventDefault();
+            downloadKML();
+        };
+
+        return container;
+    }
+});
+
+map.addControl(new downloadControl());
+
 L.drawLocal.draw.toolbar.actions.title = "";
 L.drawLocal.draw.toolbar.actions.text = "";
 L.drawLocal.draw.handlers.rectangle.tooltip.start = "";
