@@ -40,28 +40,17 @@ document.addEventListener("click", function(e) {
 
         e.preventDefault();
 
-        const input = document.querySelector(".leaflet-control-geocoder-form input");
+        const geocoderBtn = document.querySelector(".leaflet-control-geocoder-icon");
 
-        if (input) {
-            input.style.display = "block";
-            input.focus();
+        if (geocoderBtn) {
+            geocoderBtn.click();
         }
     }
 });
 
 
-//L.Control.geocoder({
-//    defaultMarkGeocode: true,
-//    placeholder: "Поиск...",
-//    position: "topleft"
-//}).addTo(map);
-
 const drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
-
-
-
-
 
 
 
@@ -174,24 +163,9 @@ var geojsonLayer = L.geoJSON(null, {
 
     onEachFeature: function (feature, layer) {
 
-        // =========================
-        // 💡 TOOLTIP (confidence)
-        // =========================
-//        let conf = feature.properties?.confidence;
-//
-//        if (conf !== undefined && conf !== null) {
-//            layer.bindTooltip(
-//                `confidence: ${conf.toFixed(2)}`,
-//                {
-//                    sticky: true,
-//                    direction: "top",
-//                    opacity: 0.9
-//                }
-//            );
-//        }
 
         // =========================
-        // 🗑 DELETE ON CLICK
+        //  DELETE ON CLICK
         // =========================
         layer.on("click", function () {
 
@@ -226,8 +200,6 @@ var geojsonLayer = L.geoJSON(null, {
     }
 
 }).addTo(map);
-
-
 
 
 
