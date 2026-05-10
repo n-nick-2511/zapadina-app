@@ -35,7 +35,14 @@ searchControl.onAdd = function () {
     a.onclick = function (e) {
         e.preventDefault();
 
-        geocoder.expand();
+        const input = document.querySelector(".leaflet-control-geocoder-form input");
+
+        if (input) {
+            input.focus();
+            input.click();
+        } else {
+            console.warn("Geocoder input not found yet");
+        }
     };
 
     return div;
