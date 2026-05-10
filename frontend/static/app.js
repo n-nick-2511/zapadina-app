@@ -32,41 +32,23 @@ searchControl.onAdd = function () {
 
     L.DomEvent.disableClickPropagation(div);
 
-    a.onclick = function (e) {
-        e.preventDefault();
-
-        const input = document.querySelector(".leaflet-control-geocoder-form input");
-
-        if (input) {
-            input.focus();
-            input.click();
-        } else {
-            console.warn("Geocoder input not found yet");
-        }
-    };
-
-    return div;
-};
-
-searchControl.addTo(map);
-
-setTimeout(() => {
-
-    const btn = document.getElementById("searchBtn");
-
-    if (!btn) return;
-
-    L.DomEvent.on(btn, "click", function (e) {
+    L.DomEvent.on(a, "click", function (e) {
         e.preventDefault();
 
         const geocoderBtn = document.querySelector(".leaflet-control-geocoder-icon");
 
         if (geocoderBtn) {
             geocoderBtn.click();
+        } else {
+            console.warn("geocoder button not found");
         }
     });
 
-}, 0);
+    return div;
+};
+
+searchControl.addTo(map);
+
 
 
 const drawnItems = new L.FeatureGroup();
