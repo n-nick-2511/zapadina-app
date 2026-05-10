@@ -13,41 +13,41 @@ L.control.zoom({
     position: 'topright'
 }).addTo(map);
 
-const geocoder = L.Control.geocoder({
-    defaultMarkGeocode: true,
-    collapsed: true,
-    placeholder: "Поиск..."
-}).addTo(map);
+//const geocoder = L.Control.geocoder({
+//    defaultMarkGeocode: true,
+//    collapsed: true,
+//    placeholder: "Поиск..."
+//}).addTo(map);
 
-const searchControl = L.control({ position: "topleft" });
-
-searchControl.onAdd = function () {
-
-    const div = L.DomUtil.create("div", "leaflet-bar leaflet-control");
-
-    const a = L.DomUtil.create("a", "", div);
-    a.innerHTML = "🔍";
-    a.href = "#";
-    a.title = "Поиск";
-
-    L.DomEvent.disableClickPropagation(div);
-
-    L.DomEvent.on(a, "click", function (e) {
-        e.preventDefault();
-
-        const geocoderBtn = document.querySelector(".leaflet-control-geocoder-icon");
-
-        if (geocoderBtn) {
-            geocoderBtn.click();
-        } else {
-            console.warn("geocoder button not found");
-        }
-    });
-
-    return div;
-};
-
-searchControl.addTo(map);
+//const searchControl = L.control({ position: "topleft" });
+//
+//searchControl.onAdd = function () {
+//
+//    const div = L.DomUtil.create("div", "leaflet-bar leaflet-control");
+//
+//    const a = L.DomUtil.create("a", "", div);
+//    a.innerHTML = "🔍";
+//    a.href = "#";
+//    a.title = "Поиск";
+//
+//    L.DomEvent.disableClickPropagation(div);
+//
+//    L.DomEvent.on(a, "click", function (e) {
+//        e.preventDefault();
+//
+//        const geocoderBtn = document.querySelector(".leaflet-control-geocoder-icon");
+//
+//        if (geocoderBtn) {
+//            geocoderBtn.click();
+//        } else {
+//            console.warn("geocoder button not found");
+//        }
+//    });
+//
+//    return div;
+//};
+//
+//searchControl.addTo(map);
 
 
 

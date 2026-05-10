@@ -232,7 +232,7 @@
 
 
 
-    .leaflet-control-geocoder-form input {
+ /*  .leaflet-control-geocoder-form input {
     padding: 8px !important;
     font-size: 14px;
     }
@@ -243,7 +243,7 @@
 
     .leaflet-control-geocoder {
     display: none !important;
-    }
+    } */
 
 
     .leaflet-draw-draw-rectangle {
@@ -274,7 +274,7 @@
     font-size: 18px;
     }
 
-    #searchBtn {
+    /* #searchBtn {
     width: 30px;
     height: 30px;
 
@@ -291,7 +291,7 @@
 
 #searchBtn:hover {
     background: #f4f4f4;
-}
+} */
 
 
 
