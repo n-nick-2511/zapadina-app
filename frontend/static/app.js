@@ -27,7 +27,16 @@ const drawControl = new L.Control.Draw({
 
 map.addControl(drawControl);
 
+document.querySelector('.leaflet-draw-draw-rectangle')
+    .title = "Выделить область";
+
 map.on(L.Draw.Event.CREATED, function (e) {
+
+    if (window.selectedLayer) {
+            map.removeLayer(window.selectedLayer);
+        }
+
+    drawnItems.clearLayers();
 
     const layer = e.layer;
     drawnItems.addLayer(layer);
@@ -252,7 +261,15 @@ function runDetection() {
 
 
 function cancelSelection() {
-    map.removeLayer(window.selectedLayer);
+
+    if (window.selectedLayer) {
+        map.removeLayer(window.selectedLayer);
+    }
+
+    drawnItems.clearLayers();
+
+    window.selectedLayer = null;
+    window.selectedBBox = null;
 }
 
 function startProcessingUI() {

@@ -241,3 +241,17 @@
     padding: 8px !important;
     font-size: 14px;
     }
+
+    .leaflet-draw-draw-rectangle {
+    background-image: none !important;
+    position: relative;
+    }
+
+    .leaflet-draw-draw-rectangle::after {
+        content: "⬚";
+        font-size: 18px;
+
+        position: absolute;
+        top: 3px;
+        left: 7px;
+    }
