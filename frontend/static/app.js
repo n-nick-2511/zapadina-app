@@ -6,7 +6,7 @@ let currentRegion = null;
 
 var map = L.map('map', {
     zoomControl: false
-}).setView([52.55, 42.58], 11);
+}).setView([52.55, 42.58], 10);
 
 //map.on('draw:drawstart', function () {
 //    document.querySelectorAll('.leaflet-draw-tooltip')
