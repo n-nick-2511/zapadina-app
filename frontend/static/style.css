@@ -239,7 +239,12 @@
 
    .leaflet-control-geocoder-icon {
     display: none !important;
-}
+    }
+
+    .leaflet-control-geocoder {
+    display: none !important;
+    }
+
 
     .leaflet-draw-draw-rectangle {
     background-image: none !important;
