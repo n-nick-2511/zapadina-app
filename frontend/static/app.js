@@ -71,16 +71,7 @@ const drawControl = new L.Control.Draw({
     }
 });
 
-L.drawLocal.draw.toolbar.actions = {
-    save: {
-        title: "",
-        text: ""
-    },
-    cancel: {
-        title: "",
-        text: ""
-    }
-};
+L.drawLocal.draw.toolbar.actions = {};
 
 map.addControl(drawControl);
 
