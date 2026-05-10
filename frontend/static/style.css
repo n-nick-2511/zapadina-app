@@ -260,9 +260,6 @@
         left: 7px;
     }
 
-    .leaflet-draw-tooltip {
-    display: none !important;
-    }
 
     #downloadKMLControl {
     display: flex;
@@ -333,4 +330,10 @@
     /* тонкие разделители */
     .leaflet-control a {
         border-bottom: 1px solid #ddd !important;
+    }
+
+    .leaflet-draw-tooltip {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
     }
