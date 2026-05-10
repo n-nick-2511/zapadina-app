@@ -127,8 +127,7 @@ def download_all_kml():
 
     cur.execute("""
            SELECT ST_AsKML(polygon)
-           FROM detections
-           );
+           FROM detections;
        """)
 
     rows = cur.fetchall()
