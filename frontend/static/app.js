@@ -13,12 +13,48 @@ L.control.zoom({
     position: 'topright'
 }).addTo(map);
 
-
-L.Control.geocoder({
+const geocoder = L.Control.geocoder({
     defaultMarkGeocode: true,
-    placeholder: "Поиск...",
-    position: "topleft"
+    collapsed: true,
+    placeholder: "Поиск..."
 }).addTo(map);
+
+const searchControl = L.control({ position: "topleft" });
+
+searchControl.onAdd = function () {
+
+    const div = L.DomUtil.create("div", "leaflet-bar leaflet-control");
+
+    div.innerHTML = `
+        <a href="#" id="searchBtn" title="Поиск">🔍</a>
+    `;
+
+    return div;
+};
+
+searchControl.addTo(map);
+
+document.addEventListener("click", function(e) {
+
+    if (e.target.id === "searchBtn") {
+
+        e.preventDefault();
+
+        const input = document.querySelector(".leaflet-control-geocoder-form input");
+
+        if (input) {
+            input.style.display = "block";
+            input.focus();
+        }
+    }
+});
+
+
+//L.Control.geocoder({
+//    defaultMarkGeocode: true,
+//    placeholder: "Поиск...",
+//    position: "topleft"
+//}).addTo(map);
 
 const drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
