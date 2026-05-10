@@ -237,26 +237,26 @@
     font-size: 14px;
     }
 
-        /* контейнер поиска */
+       /* общий контейнер */
     .leaflet-control-geocoder {
         border: none !important;
         box-shadow: none !important;
     }
 
-    /* кнопка поиска */
+    /* сама кнопка */
     .leaflet-control-geocoder-icon {
-        background-color: white !important;
-        border-radius: 0 !important;
-
         width: 30px !important;
         height: 30px !important;
 
-        border-bottom: 1px solid #ccc !important;
+        border-radius: 0 !important;
+        background-size: 16px 16px !important;
 
-        transition: none !important;
+        background-color: white !important;
+
+        transition: background-color 0.15s;
     }
 
-    /* hover */
+    /* hover как у leaflet */
     .leaflet-control-geocoder-icon:hover {
         background-color: #f4f4f4 !important;
     }
