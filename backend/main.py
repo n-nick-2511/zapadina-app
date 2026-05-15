@@ -56,7 +56,7 @@ model = None
 def get_model():
     global model
 
-    model_path = BASE_DIR / ("yolo8s_cool"
+    model_path = BASE_DIR / ("best1"
                              ".pt")
     if model is None:
         model = YOLO(model_path)
