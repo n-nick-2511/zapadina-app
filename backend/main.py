@@ -372,7 +372,9 @@ def process_area(bbox):
                     conf = float(box.conf[0])
 
                     if conf < 0.4:
+                        print("REAL SKIP:", conf)
                         continue
+                    print("REAL SAVE:", conf)
 
 
 
