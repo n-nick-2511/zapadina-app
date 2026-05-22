@@ -297,7 +297,7 @@ def save_detection_from_tile(x, y, xyxy, conf, zoom=15):
     ))
     """
 
-    print("🧩 polygon:", polygon)
+    print("polygon:", polygon)
 
     conn = get_connection()
     cur = conn.cursor()

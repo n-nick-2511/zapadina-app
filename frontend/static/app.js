@@ -170,6 +170,19 @@ L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
 
 var geojsonLayer = L.geoJSON(null, {
 
+    let conf = feature.properties?.confidence;
+
+        if (conf !== undefined && conf !== null) {
+            layer.bindTooltip(
+                `confidence: ${conf.toFixed(2)}`,
+                {
+                    sticky: true,
+                    direction: "top",
+                    opacity: 0.9
+                }
+            );
+        }
+
     style: {
         color: "red",
         weight: 2,
