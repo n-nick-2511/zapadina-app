@@ -170,7 +170,15 @@ L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
 
 var geojsonLayer = L.geoJSON(null, {
 
-    let conf = feature.properties?.confidence;
+
+    style: {
+        color: "red",
+        weight: 2,
+        fillOpacity: 0.0
+    },
+
+    onEachFeature: function (feature, layer) {
+        let conf = feature.properties?.confidence;
 
         if (conf !== undefined && conf !== null) {
             layer.bindTooltip(
@@ -182,14 +190,6 @@ var geojsonLayer = L.geoJSON(null, {
                 }
             );
         }
-
-    style: {
-        color: "red",
-        weight: 2,
-        fillOpacity: 0.0
-    },
-
-    onEachFeature: function (feature, layer) {
 
 
         // =========================
