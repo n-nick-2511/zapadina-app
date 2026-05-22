@@ -361,7 +361,7 @@ def process_area(bbox):
                 print("Cancel during detecting")
                 return
 
-            results = model.predict(tile_path, conf=0.2, imgsz=512)
+            results = model.predict(tile_path, conf=0.4, imgsz=512)
 
             img = cv2.imread(tile_path)
             annotator = Annotator(img)
