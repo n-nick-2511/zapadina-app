@@ -371,6 +371,11 @@ def process_area(bbox):
                     xyxy = box.xyxy[0].tolist()
                     conf = float(box.conf[0])
 
+                    if conf < 0.4:
+                        continue
+
+
+
                     annotator.box_label(xyxy, f"{conf:.2f}")
                     save_detection_from_tile(x, y, xyxy, conf)
 
