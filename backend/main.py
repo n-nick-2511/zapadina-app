@@ -18,37 +18,39 @@ from fastapi.staticfiles import StaticFiles
 from ultralytics.utils.plotting import Annotator
 import cv2
 
-
-
-print("🔥 THIS FILE IS RUNNING:", __file__)
+print("запуск файла:", __file__)
 BASE_DIR = Path(__file__).resolve().parent
 
+# --- инициализация приложения ---
 app = FastAPI()
 
+# --- подключение фронтенда ---
 app.mount(
     "/static",
     StaticFiles(directory=BASE_DIR.parent / "frontend" / "static"),
     name="static"
 )
-# app.mount("/debug", StaticFiles(directory="/root/zapadina-app/backend"), name="debug")
 
+# --- debug-доступ к файлам сервера ---
 app.mount(
     "/debug",
     StaticFiles(directory="."),
     name="debug"
 )
 
-
+# --- переменные состояния сервера ---
 last_ping = time.time()
 
 processing = False
 cancel_requested = False
+
 status = {
     "stage": "idle",
     "current": 0,
     "total": 0
 }
 
+# --- настройка CORS ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -57,26 +59,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+# --- модель YOLO (ленивая загрузка) ---
 model = None
 
 def get_model():
     global model
 
-    model_path = BASE_DIR / ("best1"
-                             ".pt")
+    model_path = BASE_DIR / "best1.pt"
+
+    # загружаем модель один раз
     if model is None:
         model = YOLO(model_path)
+
     return model
 
+# --- перевод координат в тайлы ---
 def deg2num(lat, lon, zoom):
     lat_rad = math.radians(lat)
     n = 2.0 ** zoom
+
     xtile = int((lon + 180.0) / 360.0 * n)
     ytile = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n)
+
     return xtile, ytile
 
+# --- подключение к базе данных ---
 load_dotenv()
+
 def get_connection():
     return psycopg2.connect(
         host=os.getenv("DB_HOST"),
@@ -86,16 +95,19 @@ def get_connection():
         password=os.getenv("DB_PASSWORD")
     )
 
+# --- проверка "живости" сервера ---
 @app.get("/ping")
 def ping():
     global last_ping
     last_ping = time.time()
     return {"status": "ok"}
 
+# --- отдача главной страницы ---
 @app.get("/")
 def root():
     return FileResponse(os.path.join(BASE_DIR, "../frontend/index.html"))
 
+# --- получение всех детекций (GeoJSON) ---
 @app.get("/api/detections")
 def get_detections():
     conn = get_connection()
@@ -123,47 +135,31 @@ def get_detections():
     if result["features"] is None:
         result["features"] = []
 
-
     cur.close()
     conn.close()
 
     return result
 
+# --- экспорт всех детекций в KML ---
 @app.get("/api/detections/kml/all")
 def download_all_kml():
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("""
-           SELECT ST_AsKML(polygon)
-           FROM detections;
-       """)
-
+    cur.execute("SELECT ST_AsKML(polygon) FROM detections;")
     rows = cur.fetchall()
 
     kml = """<?xml version="1.0" encoding="UTF-8"?>
-       <kml xmlns="http://www.opengis.net/kml/2.2">
-       <Document>
-
-       <Style id="outlineOnly">
-           <LineStyle>
-               <color>ff0000ff</color>
-               <width>2</width>
-           </LineStyle>
-           <PolyStyle>
-               <fill>0</fill>
-               <outline>1</outline>
-           </PolyStyle>
-       </Style>
-       """
+    <kml xmlns="http://www.opengis.net/kml/2.2">
+    <Document>
+    """
 
     for row in rows:
         kml += f"""
-           <Placemark>
-               <styleUrl>#outlineOnly</styleUrl>
-               {row[0]}
-           </Placemark>
-           """
+        <Placemark>
+            {row[0]}
+        </Placemark>
+        """
 
     kml += "</Document></kml>"
 
@@ -178,12 +174,15 @@ def download_all_kml():
         }
     )
 
+# --- экспорт KML по bbox ---
 @app.get("/api/kml")
 def download_kml(minLon: float, minLat: float, maxLon: float, maxLat: float):
-    print("KML REQUEST:", minLon, minLat, maxLon, maxLat)
+
+    # подключаемся к БД
     conn = get_connection()
     cur = conn.cursor()
 
+    # получаем детекции из выделенной части карты
     cur.execute("""
         SELECT ST_AsKML(polygon)
         FROM detections
@@ -199,23 +198,11 @@ def download_kml(minLon: float, minLat: float, maxLon: float, maxLat: float):
     kml = """<?xml version="1.0" encoding="UTF-8"?>
     <kml xmlns="http://www.opengis.net/kml/2.2">
     <Document>
-
-    <Style id="outlineOnly">
-        <LineStyle>
-            <color>ff0000ff</color>
-            <width>2</width>
-        </LineStyle>
-        <PolyStyle>
-            <fill>0</fill>
-            <outline>1</outline>
-        </PolyStyle>
-    </Style>
     """
 
     for row in rows:
         kml += f"""
         <Placemark>
-            <styleUrl>#outlineOnly</styleUrl>
             {row[0]}
         </Placemark>
         """
@@ -233,7 +220,10 @@ def download_kml(minLon: float, minLat: float, maxLon: float, maxLat: float):
         }
     )
 
+# --- скачивание тайла ---
 def download_tile(x, y, z, save_dir):
+
+    # формируем URL тайла
     url = f"https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
 
     os.makedirs(save_dir, exist_ok=True)
@@ -251,26 +241,22 @@ def download_tile(x, y, z, save_dir):
     except:
         return None
 
+# --- получение тайлов по bbox ---
 def get_tiles_in_bbox(bbox, zoom=15):
     min_lon, min_lat, max_lon, max_lat = bbox
 
     x1, y1 = deg2num(min_lat, min_lon, zoom)
     x2, y2 = deg2num(max_lat, max_lon, zoom)
 
-    print("DEBUG bbox:", bbox)
-    print("DEBUG tiles range:")
-    print("x:", x1, "→", x2)
-    print("y:", y1, "→", y2)
-
-
     tiles = []
 
     for x in range(min(x1, x2), max(x1, x2) + 1):
         for y in range(min(y1, y2), max(y1, y2) + 1):
-            print(f"tile: {x}, {y}")
             tiles.append((x, y))
 
     return tiles
+
+# --- перевод тайла в геокоординаты ---
 def tile_bounds(x, y, z):
     n = 2.0 ** z
 
@@ -282,12 +268,12 @@ def tile_bounds(x, y, z):
 
     return lon1, lat1, lon2, lat2
 
-
+# --- сохранение детекции в БД ---
 def save_detection_from_tile(x, y, xyxy, conf, zoom=15):
+
     lon1, lat1, lon2, lat2 = tile_bounds(x, y, zoom)
 
     tile_size = 256
-
     x1, y1, x2, y2 = xyxy
 
     min_lon = lon1 + (x1 / tile_size) * (lon2 - lon1)
@@ -306,8 +292,7 @@ def save_detection_from_tile(x, y, xyxy, conf, zoom=15):
     ))
     """
 
-    print("polygon:", polygon)
-
+    # сохранение в PostGIS
     conn = get_connection()
     cur = conn.cursor()
 
@@ -319,150 +304,3 @@ def save_detection_from_tile(x, y, xyxy, conf, zoom=15):
     conn.commit()
     cur.close()
     conn.close()
-
-
-def process_area(bbox):
-    global status, cancel_requested, processing
-
-    print(" process_area START", bbox)
-
-    processing = True
-    cancel_requested = False
-
-    tiles = get_tiles_in_bbox(bbox)
-    total = len(tiles)
-
-    status = {
-        "stage": "downloading",
-        "current": 0,
-        "total": total
-    }
-
-    paths = []
-
-    try:
-        # 🔽 СКАЧИВАНИЕ
-        for i, (x, y) in enumerate(tiles, start=1):
-
-            if cancel_requested:
-                status["stage"] = "cancelled"
-                print(" Cancel during downloading")
-                return
-
-            path = download_tile(x, y, 15, "temp_tiles")
-
-            if path:
-                paths.append((path, x, y))
-
-            status["current"] = i
-
-        # 🔽 ДЕТЕКЦИЯ
-        status["stage"] = "detecting"
-        status["current"] = 0
-        status["total"] = len(paths)
-
-        model = get_model()
-
-        for i, (tile_path, x, y) in enumerate(paths, start=1):
-
-            if cancel_requested:
-                status["stage"] = "cancelled"
-                print("Cancel during detecting")
-                return
-
-            results = model.predict(tile_path, conf=0.4, imgsz=512)
-
-            img = cv2.imread(tile_path)
-            annotator = Annotator(img)
-
-            for r in results:
-                for box in r.boxes:
-                    xyxy = box.xyxy[0].tolist()
-                    conf = float(box.conf[0])
-
-                    if conf < 0.4:
-                        print("REAL SKIP:", conf)
-                        continue
-                    print("REAL SAVE:", conf)
-
-
-
-                    annotator.box_label(xyxy, f"{conf:.2f}")
-                    save_detection_from_tile(x, y, xyxy, conf)
-
-            img_out = annotator.result()
-
-            out_path = os.path.join(BASE_DIR, f"debug_{x}_{y}.jpg")
-            cv2.imwrite(out_path, img_out)
-
-            status["current"] = i
-
-        status["stage"] = "done"
-        print("✅ process_area DONE")
-
-    finally:
-        import shutil
-        shutil.rmtree("temp_tiles", ignore_errors=True)
-
-        processing = False
-
-
-
-@app.post("/api/cancel")
-def cancel():
-    global cancel_requested
-    cancel_requested = True
-    return {"status": "cancelling"}
-
-@app.get("/api/status")
-def get_status():
-    global status, processing
-    return {
-        "processing": processing,
-        **status
-    }
-@app.post("/api/run-detection")
-def run_detection(data: dict, background_tasks: BackgroundTasks):
-    global processing
-
-    if processing:
-        return {"status": "already running"}
-
-    bbox = data["bbox"]
-
-    print("Получен bbox:", bbox)
-
-    background_tasks.add_task(process_area, bbox)
-
-    return {"status": "started"}
-
-
-@app.delete("/api/detections/{det_id}")
-def delete_detection(det_id: int):
-    conn = get_connection()
-    cur = conn.cursor()
-
-    cur.execute("""
-        DELETE FROM detections
-        WHERE id = %s
-    """, (det_id,))
-
-    conn.commit()
-    cur.close()
-    conn.close()
-
-    return {"status": "ok"}
-
-
-
-def watchdog():
-    global last_ping
-
-    while True:
-        time.sleep(5)
-
-        if time.time() - last_ping > 10000:
-            print("Выключаем сервер")
-            os._exit(0)
-
-threading.Thread(target=watchdog, daemon=True).start()

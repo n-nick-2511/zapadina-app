@@ -1,3 +1,7 @@
+/* =========================
+   ОКНО ПРОГРЕССА ДЕТЕКЦИИ
+   ========================= */
+
 #processingWidget {
     position: absolute;
     top: 20px;
@@ -12,76 +16,91 @@
 
     font-family: Arial;
     font-size: 14px;
-    }
-
-    #processingSpinner {
-        width: 20px;
-        height: 20px;
-        margin-top: 5px;
-
-        border: 3px solid #ccc;
-        border-top: 3px solid #007bff;
-        border-radius: 50%;
-
-        animation: spin 1s linear infinite;
-    }
-    #cancelBtn {
-        margin-top: 10px;
-        padding: 6px 10px;
-        border: none;
-        border-radius: 6px;
-
-        background: #dc3545; /* красная */
-        color: white;
-        cursor: pointer;
-    }
-
-    #showResultsBtn {
-        margin-top: 10px;
-        padding: 6px 10px;
-        border: none;
-        border-radius: 6px;
-
-        background: #007bff;
-        color: white;
-        cursor: pointer;
-    }
-
-    #processingText {
-        padding-right: 24px;
-    }
-
-    #closeProcessingWidget {
-        position: absolute;
-        top: 6px;
-        bottom: 6px;
-        right: 8px;
-
-        border: none;
-        background: transparent;
-        font-size: 16px;
-        cursor: pointer;
-        color: #666;
 }
 
-    #closeProcessingWidget:hover {
-        color: black;
-    }
+/* индикатор загрузки */
+#processingSpinner {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
 
-    @keyframes spin {
-        100% { transform: rotate(360deg); }
-    }
+    border: 3px solid #ccc;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
 
-    body {
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+    animation: spin 1s linear infinite;
+}
 
-    #map {
-        height: 100vh;
-    }
+/* кнопка отмены */
+#cancelBtn {
+    margin-top: 10px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
 
-    #topPanel {
+    background: #dc3545;
+    color: white;
+    cursor: pointer;
+}
+
+/* кнопка показать результаты */
+#showResultsBtn {
+    margin-top: 10px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+/* текст статуса обработки */
+#processingText {
+    padding-right: 24px;
+}
+
+/* кнопка закрытия виджета */
+#closeProcessingWidget {
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    right: 8px;
+
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    cursor: pointer;
+    color: #666;
+}
+
+#closeProcessingWidget:hover {
+    color: black;
+}
+
+/* анимация спиннера */
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* =========================
+   ОСНОВНОЙ СТИЛЬ СТРАНИЦЫ
+   ========================= */
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+#map {
+    height: 100vh;
+}
+
+/* =========================
+   ВЕРХНЯЯ ПАНЕЛЬ УПРАВЛЕНИЯ
+   ========================= */
+
+#topPanel {
     position: absolute;
     top: 10px;
     left: 50px;
@@ -97,171 +116,181 @@
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
-    /* 🔥 панель */
-    #controls {
-        position: absolute;
-        top: 15px;
-        left: 50px;
-        z-index: 1000;
+/* =========================
+   ПАНЕЛЬ КОНТРОЛОВ
+   ========================= */
 
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
+#controls {
+    position: absolute;
+    top: 15px;
+    left: 50px;
+    z-index: 1000;
 
-        padding: 12px;
-        border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
 
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    padding: 12px;
+    border-radius: 12px;
 
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 
-    select {
-        padding: 6px 10px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        outline: none;
-        font-size: 14px;
-    }
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
 
-    button {
-        padding: 6px 12px;
-        border: none;
-        border-radius: 8px;
-        background: #2f80ed;
-        color: white;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    button:hover {
-        background: #1c6cd6;
-        transform: translateY(-1px);
-    }
-
-    button:active {
-        transform: translateY(0px);
-        background: #155ab6;
-    }
-
-    button.secondary {
-        background: #27ae60;
-    }
-
-    button.secondary:hover {
-        background: #1f8f4e;
-    }
-
-        /* 🔥 контейнер зума */
-    .leaflet-control-zoom {
-        border: none !important;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        border-radius: 12px;
-        overflow: hidden;
-
-        backdrop-filter: blur(10px);
-    }
-
-    /* 🔘 сами кнопки */
-    .leaflet-control-zoom a {
-        background: rgba(255, 255, 255, 0.9) !important;
-        color: #2f80ed !important;
-
-        width: 36px;
-        height: 36px;
-        line-height: 36px;
-
-        font-size: 18px;
-        font-weight: bold;
-
-        border: none !important;
-    }
-
-    /* hover */
-    .leaflet-control-zoom a:hover {
-        background: #2f80ed !important;
-        color: white !important;
-    }
-
-    /* разделение между + и - */
-    .leaflet-control-zoom a:first-child {
-        border-bottom: 1px solid rgba(0,0,0,0.1) !important;
-    }
-
-
-    .modal.hidden {
-    display: none;
-    }
-
-    .modal {
-        position: fixed;
-        inset: 0;
-
-        background: rgba(0,0,0,0.4);
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        z-index: 5000;
-    }
-
-    .modalContent {
-        background: white;
-
-        padding: 20px;
-        border-radius: 12px;
-
-        min-width: 260px;
-
-        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
-
-    .modalText {
-        margin-bottom: 16px;
-        font-size: 16px;
-    }
-
-    .modalButtons {
-        display: flex;
-        gap: 10px;
-        justify-content: flex-end;
-    }
-
-
-
- /*  .leaflet-control-geocoder-form input {
-    padding: 8px !important;
+select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    outline: none;
     font-size: 14px;
-    }
+}
 
-   .leaflet-control-geocoder-icon {
-    display: none !important;
-    }
+/* базовые кнопки */
+button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #2f80ed;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
 
-    .leaflet-control-geocoder {
-    display: none !important;
-    } */
+button:hover {
+    background: #1c6cd6;
+    transform: translateY(-1px);
+}
 
+button:active {
+    transform: translateY(0px);
+    background: #155ab6;
+}
 
-    .leaflet-draw-draw-rectangle {
+button.secondary {
+    background: #27ae60;
+}
+
+button.secondary:hover {
+    background: #1f8f4e;
+}
+
+/* =========================
+   КНОПКИ ЗУМА
+   ========================= */
+
+.leaflet-control-zoom {
+    border: none !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    border-radius: 12px;
+    overflow: hidden;
+
+    backdrop-filter: blur(10px);
+}
+
+.leaflet-control-zoom a {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #2f80ed !important;
+
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    border: none !important;
+}
+
+.leaflet-control-zoom a:hover {
+    background: #2f80ed !important;
+    color: white !important;
+}
+
+/* разделитель + / - */
+.leaflet-control-zoom a:first-child {
+    border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+}
+
+/* =========================
+   МОДАЛЬНОЕ ОКНО
+   ========================= */
+
+.modal.hidden {
+    display: none;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0,0,0,0.4);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 5000;
+}
+
+.modalContent {
+    background: white;
+
+    padding: 20px;
+    border-radius: 12px;
+
+    min-width: 260px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.modalText {
+    margin-bottom: 16px;
+    font-size: 16px;
+}
+
+.modalButtons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* =========================
+   LEAFLET DRAW TOOL
+   ========================= */
+
+.leaflet-draw-draw-rectangle {
     background-image: none !important;
     position: relative;
-    }
+}
 
-    .leaflet-draw-draw-rectangle::after {
-        content: "⬚";
-        font-size: 18px;
+.leaflet-draw-draw-rectangle::after {
+    content: "⬚";
+    font-size: 18px;
 
-        position: absolute;
-        top: 3px;
-        left: 7px;
-    }
+    position: absolute;
+    top: 3px;
+    left: 7px;
+}
 
+/* скрытие подсказок draw */
+.leaflet-draw-tooltip {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
 
-    #downloadKMLControl {
+.leaflet-draw-actions {
+    display: none !important;
+}
+
+/* =========================
+   КНОПКА СКАЧИВАНИЯ KML
+   ========================= */
+
+#downloadKMLControl {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -273,71 +302,38 @@
     color: black;
 
     font-size: 18px;
-    }
-
-    /* #searchBtn {
-    width: 30px;
-    height: 30px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: white;
-    color: black;
-
-    text-decoration: none;
-    font-size: 16px;
 }
 
-#searchBtn:hover {
-    background: #f4f4f4;
-} */
+/* =========================
+   ВИД КОНТРОЛОВ LEAFLET
+   ========================= */
 
+.leaflet-top.leaflet-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
 
+.leaflet-top.leaflet-left .leaflet-control {
+    margin-top: 0;
+    margin-left: 10px;
+}
 
-    /* общий контейнер */
-    .leaflet-top.leaflet-left {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-    }
+.leaflet-control {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
 
-    /* убираем отступы между контролами */
-    .leaflet-top.leaflet-left .leaflet-control {
-        margin-top: 0;
-        margin-left: 10px;
-    }
+.leaflet-top.leaflet-left .leaflet-control:first-child {
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+}
 
-    /* делаем единый вид */
-    .leaflet-control {
-        border-radius: 0 !important;
-        box-shadow: none !important;
-    }
+.leaflet-top.leaflet-left .leaflet-control:last-child {
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+}
 
-    /* верхняя кнопка */
-    .leaflet-top.leaflet-left .leaflet-control:first-child {
-        border-top-left-radius: 10px !important;
-        border-top-right-radius: 10px !important;
-    }
-
-    /* нижняя кнопка */
-    .leaflet-top.leaflet-left .leaflet-control:last-child {
-        border-bottom-left-radius: 10px !important;
-        border-bottom-right-radius: 10px !important;
-    }
-
-    /* тонкие разделители */
-    .leaflet-control a {
-        border-bottom: 1px solid #ddd !important;
-    }
-
-    .leaflet-draw-tooltip {
-        display: none !important;
-        opacity: 0 !important;
-        visibility: hidden !important;
-    }
-
-    .leaflet-draw-actions {
-         display: none !important;
-    }
+.leaflet-control a {
+    border-bottom: 1px solid #ddd !important;
+}
