@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
+from dotenv import load_dotenv
 import time
 import threading
 import os
@@ -29,7 +30,13 @@ app.mount(
     StaticFiles(directory=BASE_DIR.parent / "frontend" / "static"),
     name="static"
 )
-app.mount("/debug", StaticFiles(directory="/root/zapadina-app/backend"), name="debug")
+# app.mount("/debug", StaticFiles(directory="/root/zapadina-app/backend"), name="debug")
+
+app.mount(
+    "/debug",
+    StaticFiles(directory="."),
+    name="debug"
+)
 
 
 last_ping = time.time()
@@ -68,13 +75,15 @@ def deg2num(lat, lon, zoom):
     xtile = int((lon + 180.0) / 360.0 * n)
     ytile = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n)
     return xtile, ytile
+
+load_dotenv()
 def get_connection():
     return psycopg2.connect(
-        host="c831c-rw.db.pub.dbaas.postgrespro.ru",
-        port=5432,
-        database="dbstud",
-        user="circles",
-        password="pass_circle_2026"
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        database=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD")
     )
 
 @app.get("/ping")

@@ -7,7 +7,7 @@ import requests
 
 
 proc = subprocess.Popen(
-    [sys.executable, "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
+    [sys.executable, "-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"],
     cwd="backend"
 )
 
@@ -22,16 +22,16 @@ def wait_for_server():
 
 
 if wait_for_server():
-    print("✅ Сервер запущен")
+    print("Сервер запущен")
     path = os.path.abspath("frontend/index.html")
     webbrowser.open("file://" + path)
 else:
-    print("❌ Сервер не поднялся")
+    print("Сервер не поднялся")
 
 try:
     while True:
         if proc.poll() is not None:
-            print("Закрываем app.py")
+            print("Закрытие приложения")
             break
         time.sleep(1)
 except KeyboardInterrupt:
